@@ -1,0 +1,17 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+data/cache/*
+!data/cache/.gitkeep
+data/vectorstore/*
+!data/vectorstore/.gitkeep
+*.log
+.DS_Store
+eval/results/_scratch/
+eval/results/_run.log
+node_modules/
+package-lock.json

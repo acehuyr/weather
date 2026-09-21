@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "weather-ui",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "streamlit", "run", "src/ui/app.py",
+                      "--server.port", "8502", "--server.headless", "true",
+                      "--server.runOnSave", "true"],
+      "port": 8502
+    }
+  ]
+}

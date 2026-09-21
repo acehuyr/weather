@@ -1,0 +1,23 @@
+# Streamlit's own theme. Setting it here fixes widgets that CSS cannot
+# reliably reach - slider tracks, spinners, checkboxes, focus rings - so the
+# interface stops mixing Streamlit's default red with this project's palette.
+# Token values mirror src/ui/theme.py; change both together.
+
+[theme]
+base = "dark"
+primaryColor = "#35C4B5"              # instrument teal, chrome only
+backgroundColor = "#0C1119"           # ink
+secondaryBackgroundColor = "#141B26"  # panel
+textColor = "#E4EBF3"
+borderColor = "#24303F"               # hairline
+linkColor = "#35C4B5"
+font = "IBM Plex Sans, sans-serif"
+headingFont = "IBM Plex Sans Condensed, sans-serif"
+codeFont = "IBM Plex Mono, monospace"
+baseRadius = "small"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

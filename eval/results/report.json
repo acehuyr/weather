@@ -1,50 +1,50 @@
 {
-  "generated_at": "2026-09-21 10:26",
+  "generated_at": "2026-09-21 20:55",
   "dataset": {
-    "total": 46,
-    "dev": 34,
-    "test": 12,
+    "total": 70,
+    "dev": 46,
+    "test": 24,
     "by_intent": {
-      "anomaly": 8,
-      "comparison": 7,
-      "current": 8,
-      "forecast": 7,
-      "general": 9,
-      "trend": 7
+      "anomaly": 12,
+      "comparison": 11,
+      "current": 12,
+      "forecast": 11,
+      "general": 13,
+      "trend": 11
     },
-    "with_gold_sources": 29,
-    "paraphrases": 8,
-    "with_location": 37
+    "with_gold_sources": 45,
+    "paraphrases": 40,
+    "with_location": 57
   },
   "planning": [
     {
       "mode": "rule-based",
       "split": "dev",
-      "cases": 34,
+      "cases": 46,
       "fell_back_to_rules": 0,
       "intent_accuracy": 1.0,
       "location_accuracy": 1.0,
-      "variable_f1": 0.8823529411764706,
+      "variable_f1": 0.8478260869565217,
       "intent_accuracy_plain": 1.0,
       "intent_accuracy_paraphrase": 1.0,
       "confusion": {
         "current": {
-          "current": 6
+          "current": 8
         },
         "forecast": {
-          "forecast": 5
+          "forecast": 7
         },
         "trend": {
-          "trend": 5
+          "trend": 7
         },
         "comparison": {
-          "comparison": 5
+          "comparison": 7
         },
         "anomaly": {
-          "anomaly": 6
+          "anomaly": 8
         },
         "general": {
-          "general": 7
+          "general": 9
         }
       },
       "failures": [],
@@ -420,6 +420,138 @@
           "intent_ok": true,
           "location_expected": "",
           "location_predicted": "",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Give me the outlook for Jaipur over the next ten days",
+          "paraphrase": false,
+          "intent_expected": "forecast",
+          "intent_predicted": "forecast",
+          "intent_ok": true,
+          "location_expected": "Jaipur",
+          "location_predicted": "Jaipur",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Has Mumbai become rainier across the last decade?",
+          "paraphrase": true,
+          "intent_expected": "trend",
+          "intent_predicted": "trend",
+          "intent_ok": true,
+          "location_expected": "Mumbai",
+          "location_predicted": "Mumbai",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "Is today's heat in Nagpur out of line with the norm?",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
+          "intent_predicted": "anomaly",
+          "intent_ok": true,
+          "location_expected": "Nagpur",
+          "location_predicted": "Nagpur",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Set that against what Chennai usually sees in October",
+          "paraphrase": true,
+          "intent_expected": "comparison",
+          "intent_predicted": "comparison",
+          "intent_ok": true,
+          "location_expected": "Chennai",
+          "location_predicted": "Chennai",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Right this minute, how warm is Pune?",
+          "paraphrase": true,
+          "intent_expected": "current",
+          "intent_predicted": "current",
+          "intent_ok": true,
+          "location_expected": "Pune",
+          "location_predicted": "Pune",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Put simply, what makes air feel sticky?",
+          "paraphrase": true,
+          "intent_expected": "general",
+          "intent_predicted": "general",
+          "intent_ok": true,
+          "location_expected": "",
+          "location_predicted": "",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "What's the rain situation in Kolkata at present?",
+          "paraphrase": true,
+          "intent_expected": "current",
+          "intent_predicted": "current",
+          "intent_ok": true,
+          "location_expected": "Kolkata",
+          "location_predicted": "Kolkata",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Does Delhi see more downpours now than it used to?",
+          "paraphrase": true,
+          "intent_expected": "trend",
+          "intent_predicted": "trend",
+          "intent_ok": true,
+          "location_expected": "Delhi",
+          "location_predicted": "Delhi",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "How do meteorologists decide something is a cold wave?",
+          "paraphrase": true,
+          "intent_expected": "general",
+          "intent_predicted": "general",
+          "intent_ok": true,
+          "location_expected": "",
+          "location_predicted": "",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Anything freakish in the Pune numbers lately?",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
+          "intent_predicted": "anomaly",
+          "intent_ok": true,
+          "location_expected": "Pune",
+          "location_predicted": "Pune",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Roughly what will Bengaluru look like on Friday?",
+          "paraphrase": true,
+          "intent_expected": "forecast",
+          "intent_predicted": "forecast",
+          "intent_ok": true,
+          "location_expected": "Bengaluru",
+          "location_predicted": "Bengaluru",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Line up this year's Mumbai monsoon beside the usual",
+          "paraphrase": true,
+          "intent_expected": "comparison",
+          "intent_predicted": "comparison",
+          "intent_ok": true,
+          "location_expected": "Mumbai",
+          "location_predicted": "Mumbai",
           "location_ok": true,
           "variable_f1": 1.0
         }
@@ -428,883 +560,317 @@
     {
       "mode": "rule-based",
       "split": "test",
-      "cases": 12,
+      "cases": 24,
       "fell_back_to_rules": 0,
-      "intent_accuracy": 0.3333333333333333,
+      "intent_accuracy": 0.7916666666666666,
       "location_accuracy": 1.0,
-      "variable_f1": 0.75,
-      "intent_accuracy_plain": 0.3333333333333333,
-      "intent_accuracy_paraphrase": 0.0,
-      "confusion": {
-        "forecast": {
-          "current": 1,
-          "forecast": 1
-        },
-        "trend": {
-          "current": 2
-        },
-        "anomaly": {
-          "current": 2
-        },
-        "comparison": {
-          "current": 1,
-          "trend": 1
-        },
-        "current": {
-          "current": 2
-        },
-        "general": {
-          "current": 1,
-          "general": 1
-        }
-      },
-      "failures": [
-        {
-          "question": "Give me the outlook for Jaipur over the next ten days",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Jaipur",
-          "location_predicted": "Jaipur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Has Mumbai become rainier across the last decade?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Nagpur",
-          "location_predicted": "Nagpur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Set that against what Chennai usually sees in October",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Put simply, what makes air feel sticky?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "Anything freakish in the Pune numbers lately?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Line up this year's Mumbai monsoon beside the usual",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "trend",
-          "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        }
-      ],
-      "rows": [
-        {
-          "question": "Give me the outlook for Jaipur over the next ten days",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Jaipur",
-          "location_predicted": "Jaipur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Has Mumbai become rainier across the last decade?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Nagpur",
-          "location_predicted": "Nagpur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Set that against what Chennai usually sees in October",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Right this minute, how warm is Pune?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Put simply, what makes air feel sticky?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "What's the rain situation in Kolkata at present?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Kolkata",
-          "location_predicted": "Kolkata",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "How do meteorologists decide something is a cold wave?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Anything freakish in the Pune numbers lately?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Roughly what will Bengaluru look like on Friday?",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "forecast",
-          "intent_ok": true,
-          "location_expected": "Bengaluru",
-          "location_predicted": "Bengaluru",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Line up this year's Mumbai monsoon beside the usual",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "trend",
-          "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        }
-      ]
-    },
-    {
-      "mode": "llm",
-      "split": "dev",
-      "cases": 34,
-      "fell_back_to_rules": 32,
-      "intent_accuracy": 1.0,
-      "location_accuracy": 1.0,
-      "variable_f1": 0.9117647058823529,
+      "variable_f1": 0.6666666666666666,
       "intent_accuracy_plain": 1.0,
-      "intent_accuracy_paraphrase": 1.0,
+      "intent_accuracy_paraphrase": 0.7619047619047619,
       "confusion": {
         "current": {
-          "current": 6
+          "current": 4
         },
         "forecast": {
-          "forecast": 5
+          "forecast": 3,
+          "current": 1
         },
         "trend": {
-          "trend": 5
+          "current": 2,
+          "trend": 2
         },
         "comparison": {
-          "comparison": 5
+          "comparison": 4
         },
         "anomaly": {
-          "anomaly": 6
+          "anomaly": 2,
+          "forecast": 1,
+          "current": 1
         },
         "general": {
-          "general": 7
+          "general": 4
         }
       },
-      "failures": [],
-      "rows": [
+      "failures": [
         {
-          "question": "What is the weather in Mumbai right now?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "weather in Pune right now",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How is the weather in Chennai currently?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What is the temperature in Delhi at the moment?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Tell me the current humidity in Kolkata",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Kolkata",
-          "location_predicted": "Kolkata",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How muggy is it in Chennai today?",
-          "paraphrase": true,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Will rainfall increase this week in Pune?",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "forecast",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Is it going to rain in Chennai tomorrow?",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "forecast",
-          "intent_ok": true,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What is the temperature forecast for Delhi?",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "forecast",
-          "intent_ok": true,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Should I expect showers in Mumbai over the next few days?",
+          "question": "What kind of week is Bengaluru in for, heat-wise?",
           "paraphrase": true,
           "intent_expected": "forecast",
-          "intent_predicted": "forecast",
-          "intent_ok": true,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "How windy will it get in Bengaluru this weekend?",
-          "paraphrase": true,
-          "intent_expected": "forecast",
-          "intent_predicted": "forecast",
-          "intent_ok": true,
+          "intent_predicted": "current",
+          "intent_ok": false,
           "location_expected": "Bengaluru",
           "location_predicted": "Bengaluru",
           "location_ok": true,
           "variable_f1": 1.0
         },
         {
-          "question": "What is the weather trend in Mumbai?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "trend",
-          "intent_ok": true,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How has the temperature in Delhi been changing?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "trend",
-          "intent_ok": true,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Show me the long-term rainfall pattern in Pune",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "trend",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Has Kolkata been getting hotter over the years?",
+          "question": "Is Shimla losing its winters?",
           "paraphrase": true,
           "intent_expected": "trend",
-          "intent_predicted": "trend",
-          "intent_ok": true,
-          "location_expected": "Kolkata",
-          "location_predicted": "Kolkata",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What does the historical wind data for Chennai look like?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "trend",
-          "intent_ok": true,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How has the temperature in Delhi changed compared with previous years?",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "comparison",
-          "intent_ok": true,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How has rainfall in Pune compared with previous years?",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "comparison",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Is this month wetter in Mumbai than last year?",
-          "paraphrase": true,
-          "intent_expected": "comparison",
-          "intent_predicted": "comparison",
-          "intent_ok": true,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
+          "intent_predicted": "current",
+          "intent_ok": false,
+          "location_expected": "Shimla",
+          "location_predicted": "Shimla",
           "location_ok": true,
           "variable_f1": 0.0
         },
         {
-          "question": "Compare the current temperature in Jaipur with past years",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "comparison",
-          "intent_ok": true,
-          "location_expected": "Jaipur",
-          "location_predicted": "Jaipur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How does this season in Chennai stack up against earlier years?",
+          "question": "What direction has Lucknow's climate been moving?",
           "paraphrase": true,
-          "intent_expected": "comparison",
-          "intent_predicted": "comparison",
-          "intent_ok": true,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Why is the current weather in Chennai unusual?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "anomaly",
-          "intent_ok": true,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Is anything abnormal about the weather in Mumbai?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "anomaly",
-          "intent_ok": true,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Why is it so unusually hot in Delhi?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "anomaly",
-          "intent_ok": true,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Has there been any extreme rainfall in Mumbai recently?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "anomaly",
-          "intent_ok": true,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Is the weather in Nagpur behaving strangely?",
-          "paraphrase": true,
-          "intent_expected": "anomaly",
-          "intent_predicted": "anomaly",
-          "intent_ok": true,
-          "location_expected": "Nagpur",
-          "location_predicted": "Nagpur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Did Pune record anything out of the ordinary this month?",
-          "paraphrase": true,
-          "intent_expected": "anomaly",
-          "intent_predicted": "anomaly",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What is relative humidity?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What counts as a heat wave in India?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How much rain is officially called very heavy rainfall?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What is a climate normal?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Explain how the southwest monsoon works",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "How many years of data do I need to claim a warming trend?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "What does falling atmospheric pressure mean?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "general",
-          "intent_ok": true,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 1.0
-        }
-      ]
-    },
-    {
-      "mode": "llm",
-      "split": "test",
-      "cases": 12,
-      "fell_back_to_rules": 12,
-      "intent_accuracy": 0.3333333333333333,
-      "location_accuracy": 1.0,
-      "variable_f1": 0.75,
-      "intent_accuracy_plain": 0.3333333333333333,
-      "intent_accuracy_paraphrase": 0.0,
-      "confusion": {
-        "forecast": {
-          "current": 1,
-          "forecast": 1
-        },
-        "trend": {
-          "current": 2
-        },
-        "anomaly": {
-          "current": 2
-        },
-        "comparison": {
-          "current": 1,
-          "trend": 1
-        },
-        "current": {
-          "current": 2
-        },
-        "general": {
-          "current": 1,
-          "general": 1
-        }
-      },
-      "failures": [
-        {
-          "question": "Give me the outlook for Jaipur over the next ten days",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Jaipur",
-          "location_predicted": "Jaipur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Has Mumbai become rainier across the last decade?",
-          "paraphrase": false,
           "intent_expected": "trend",
           "intent_predicted": "current",
           "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
+          "location_expected": "Lucknow",
+          "location_predicted": "Lucknow",
           "location_ok": true,
-          "variable_f1": 0.0
+          "variable_f1": 1.0
         },
         {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "paraphrase": false,
+          "question": "Has Shimla thrown up any surprises this week?",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
+          "intent_predicted": "forecast",
+          "intent_ok": false,
+          "location_expected": "Shimla",
+          "location_predicted": "Shimla",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "paraphrase": true,
           "intent_expected": "anomaly",
           "intent_predicted": "current",
           "intent_ok": false,
-          "location_expected": "Nagpur",
-          "location_predicted": "Nagpur",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Set that against what Chennai usually sees in October",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Put simply, what makes air feel sticky?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "paraphrase": false,
-          "intent_expected": "trend",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "Anything freakish in the Pune numbers lately?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Line up this year's Mumbai monsoon beside the usual",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "trend",
-          "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
+          "location_expected": "Cherrapunji",
+          "location_predicted": "Cherrapunji",
           "location_ok": true,
           "variable_f1": 1.0
         }
       ],
       "rows": [
         {
-          "question": "Give me the outlook for Jaipur over the next ten days",
-          "paraphrase": false,
-          "intent_expected": "forecast",
+          "question": "How's Hyderabad looking outside?",
+          "paraphrase": true,
+          "intent_expected": "current",
           "intent_predicted": "current",
-          "intent_ok": false,
+          "intent_ok": true,
+          "location_expected": "Hyderabad",
+          "location_predicted": "Hyderabad",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Give me conditions in Ahmedabad as things stand",
+          "paraphrase": true,
+          "intent_expected": "current",
+          "intent_predicted": "current",
+          "intent_ok": true,
+          "location_expected": "Ahmedabad",
+          "location_predicted": "Ahmedabad",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Temperature readout for Lucknow please",
+          "paraphrase": false,
+          "intent_expected": "current",
+          "intent_predicted": "current",
+          "intent_ok": true,
+          "location_expected": "Lucknow",
+          "location_predicted": "Lucknow",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Is it raining in Shimla this very moment?",
+          "paraphrase": false,
+          "intent_expected": "current",
+          "intent_predicted": "current",
+          "intent_ok": true,
+          "location_expected": "Shimla",
+          "location_predicted": "Shimla",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "What should Hyderabad brace for over the weekend?",
+          "paraphrase": true,
+          "intent_expected": "forecast",
+          "intent_predicted": "forecast",
+          "intent_ok": true,
+          "location_expected": "Hyderabad",
+          "location_predicted": "Hyderabad",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Any chance of a soaking in Kolkata before Sunday?",
+          "paraphrase": true,
+          "intent_expected": "forecast",
+          "intent_predicted": "forecast",
+          "intent_ok": true,
+          "location_expected": "Kolkata",
+          "location_predicted": "Kolkata",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "Tell me how Jaipur shapes up over the coming fortnight",
+          "paraphrase": true,
+          "intent_expected": "forecast",
+          "intent_predicted": "forecast",
+          "intent_ok": true,
           "location_expected": "Jaipur",
           "location_predicted": "Jaipur",
           "location_ok": true,
           "variable_f1": 1.0
         },
         {
-          "question": "Has Mumbai become rainier across the last decade?",
-          "paraphrase": false,
+          "question": "What kind of week is Bengaluru in for, heat-wise?",
+          "paraphrase": true,
+          "intent_expected": "forecast",
+          "intent_predicted": "current",
+          "intent_ok": false,
+          "location_expected": "Bengaluru",
+          "location_predicted": "Bengaluru",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Is Shimla losing its winters?",
+          "paraphrase": true,
           "intent_expected": "trend",
           "intent_predicted": "current",
           "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
+          "location_expected": "Shimla",
+          "location_predicted": "Shimla",
           "location_ok": true,
           "variable_f1": 0.0
         },
         {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
+          "question": "Have Ahmedabad's summers drifted since the nineties?",
+          "paraphrase": true,
+          "intent_expected": "trend",
+          "intent_predicted": "trend",
+          "intent_ok": true,
+          "location_expected": "Ahmedabad",
+          "location_predicted": "Ahmedabad",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "paraphrase": true,
+          "intent_expected": "trend",
+          "intent_predicted": "trend",
+          "intent_ok": true,
+          "location_expected": "Cherrapunji",
+          "location_predicted": "Cherrapunji",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "What direction has Lucknow's climate been moving?",
+          "paraphrase": true,
+          "intent_expected": "trend",
           "intent_predicted": "current",
           "intent_ok": false,
+          "location_expected": "Lucknow",
+          "location_predicted": "Lucknow",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "How does Hyderabad this month measure against its usual September?",
+          "paraphrase": true,
+          "intent_expected": "comparison",
+          "intent_predicted": "comparison",
+          "intent_ok": true,
+          "location_expected": "Hyderabad",
+          "location_predicted": "Hyderabad",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Put Nagpur's current spell next to what it saw twelve months ago",
+          "paraphrase": true,
+          "intent_expected": "comparison",
+          "intent_predicted": "comparison",
+          "intent_ok": true,
           "location_expected": "Nagpur",
           "location_predicted": "Nagpur",
           "location_ok": true,
           "variable_f1": 1.0
         },
         {
-          "question": "Set that against what Chennai usually sees in October",
-          "paraphrase": false,
+          "question": "Is Kolkata wetter or drier than it was three years back?",
+          "paraphrase": true,
           "intent_expected": "comparison",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Chennai",
-          "location_predicted": "Chennai",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Right this minute, how warm is Pune?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
-          "intent_ok": true,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Put simply, what makes air feel sticky?",
-          "paraphrase": false,
-          "intent_expected": "general",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "",
-          "location_predicted": "",
-          "location_ok": true,
-          "variable_f1": 0.0
-        },
-        {
-          "question": "What's the rain situation in Kolkata at present?",
-          "paraphrase": false,
-          "intent_expected": "current",
-          "intent_predicted": "current",
+          "intent_predicted": "comparison",
           "intent_ok": true,
           "location_expected": "Kolkata",
           "location_predicted": "Kolkata",
           "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "paraphrase": true,
+          "intent_expected": "comparison",
+          "intent_predicted": "comparison",
+          "intent_ok": true,
+          "location_expected": "Jaipur",
+          "location_predicted": "Jaipur",
+          "location_ok": true,
           "variable_f1": 1.0
         },
         {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "paraphrase": false,
-          "intent_expected": "trend",
+          "question": "Does anything in the Ahmedabad data look off?",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
+          "intent_predicted": "anomaly",
+          "intent_ok": true,
+          "location_expected": "Ahmedabad",
+          "location_predicted": "Ahmedabad",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Has Shimla thrown up any surprises this week?",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
+          "intent_predicted": "forecast",
+          "intent_ok": false,
+          "location_expected": "Shimla",
+          "location_predicted": "Shimla",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
           "intent_predicted": "current",
           "intent_ok": false,
-          "location_expected": "Delhi",
-          "location_predicted": "Delhi",
+          "location_expected": "Cherrapunji",
+          "location_predicted": "Cherrapunji",
+          "location_ok": true,
+          "variable_f1": 1.0
+        },
+        {
+          "question": "Something looks wrong with Lucknow's temperatures lately",
+          "paraphrase": true,
+          "intent_expected": "anomaly",
+          "intent_predicted": "anomaly",
+          "intent_ok": true,
+          "location_expected": "Lucknow",
+          "location_predicted": "Lucknow",
           "location_ok": true,
           "variable_f1": 0.0
         },
         {
-          "question": "How do meteorologists decide something is a cold wave?",
+          "question": "At what point does a storm get classified as a cyclone?",
           "paraphrase": false,
           "intent_expected": "general",
           "intent_predicted": "general",
@@ -1315,35 +881,35 @@
           "variable_f1": 1.0
         },
         {
-          "question": "Anything freakish in the Pune numbers lately?",
-          "paraphrase": false,
-          "intent_expected": "anomaly",
-          "intent_predicted": "current",
-          "intent_ok": false,
-          "location_expected": "Pune",
-          "location_predicted": "Pune",
-          "location_ok": true,
-          "variable_f1": 1.0
-        },
-        {
-          "question": "Roughly what will Bengaluru look like on Friday?",
-          "paraphrase": false,
-          "intent_expected": "forecast",
-          "intent_predicted": "forecast",
+          "question": "Talk me through why the rains arrive when they do",
+          "paraphrase": true,
+          "intent_expected": "general",
+          "intent_predicted": "general",
           "intent_ok": true,
-          "location_expected": "Bengaluru",
-          "location_predicted": "Bengaluru",
+          "location_expected": "",
+          "location_predicted": "",
           "location_ok": true,
-          "variable_f1": 1.0
+          "variable_f1": 0.0
         },
         {
-          "question": "Line up this year's Mumbai monsoon beside the usual",
-          "paraphrase": false,
-          "intent_expected": "comparison",
-          "intent_predicted": "trend",
-          "intent_ok": false,
-          "location_expected": "Mumbai",
-          "location_predicted": "Mumbai",
+          "question": "Is one scorching summer enough to prove anything?",
+          "paraphrase": true,
+          "intent_expected": "general",
+          "intent_predicted": "general",
+          "intent_ok": true,
+          "location_expected": "",
+          "location_predicted": "",
+          "location_ok": true,
+          "variable_f1": 0.0
+        },
+        {
+          "question": "Where's the line between weather and climate?",
+          "paraphrase": true,
+          "intent_expected": "general",
+          "intent_predicted": "general",
+          "intent_ok": true,
+          "location_expected": "",
+          "location_predicted": "",
           "location_ok": true,
           "variable_f1": 1.0
         }
@@ -1355,11 +921,11 @@
       "backend": "hashed TF-IDF",
       "split": "dev",
       "dim": 8192,
-      "cases": 21,
-      "recall@4": 0.7619047619047619,
-      "recall@1": 0.47619047619047616,
-      "precision@1": 0.47619047619047616,
-      "mrr": 0.6031746031746031,
+      "cases": 29,
+      "recall@4": 0.6551724137931034,
+      "recall@1": 0.41379310344827586,
+      "precision@1": 0.41379310344827586,
+      "mrr": 0.514367816091954,
       "misses": [
         {
           "question": "How muggy is it in Chennai today?",
@@ -1433,6 +999,81 @@
             "05_interpreting_trends.md"
           ],
           "top_score": 0.0847,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is today's heat in Nagpur out of line with the norm?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.1127,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Set that against what Chennai usually sees in October",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.1205,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Put simply, what makes air feel sticky?",
+          "gold": [
+            "01_weather_variables.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0515,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does Delhi see more downpours now than it used to?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0551,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Anything freakish in the Pune numbers lately?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "01_weather_variables.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0544,
           "hit": false,
           "reciprocal_rank": 0.0
         }
@@ -1753,96 +1394,7 @@
           "top_score": 0.177,
           "hit": true,
           "reciprocal_rank": 1.0
-        }
-      ]
-    },
-    {
-      "backend": "hashed TF-IDF",
-      "split": "test",
-      "dim": 8192,
-      "cases": 8,
-      "recall@4": 0.375,
-      "recall@1": 0.25,
-      "precision@1": 0.25,
-      "mrr": 0.28125,
-      "misses": [
-        {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "04_extreme_weather_criteria.md",
-            "01_weather_variables.md",
-            "05_interpreting_trends.md",
-            "05_interpreting_trends.md"
-          ],
-          "top_score": 0.1127,
-          "hit": false,
-          "reciprocal_rank": 0.0
         },
-        {
-          "question": "Set that against what Chennai usually sees in October",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "04_extreme_weather_criteria.md",
-            "01_weather_variables.md",
-            "01_weather_variables.md"
-          ],
-          "top_score": 0.1205,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Put simply, what makes air feel sticky?",
-          "gold": [
-            "01_weather_variables.md"
-          ],
-          "retrieved": [
-            "04_extreme_weather_criteria.md",
-            "04_extreme_weather_criteria.md",
-            "05_interpreting_trends.md",
-            "05_interpreting_trends.md"
-          ],
-          "top_score": 0.0515,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "gold": [
-            "05_interpreting_trends.md"
-          ],
-          "retrieved": [
-            "02_climatology_and_anomalies.md",
-            "03_indian_monsoon.md",
-            "01_weather_variables.md",
-            "01_weather_variables.md"
-          ],
-          "top_score": 0.0551,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Anything freakish in the Pune numbers lately?",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "01_weather_variables.md",
-            "05_interpreting_trends.md",
-            "03_indian_monsoon.md",
-            "01_weather_variables.md"
-          ],
-          "top_score": 0.0544,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        }
-      ],
-      "rows": [
         {
           "question": "Has Mumbai become rainier across the last decade?",
           "gold": [
@@ -1966,14 +1518,343 @@
       ]
     },
     {
+      "backend": "hashed TF-IDF",
+      "split": "test",
+      "dim": 8192,
+      "cases": 16,
+      "recall@4": 0.6875,
+      "recall@1": 0.25,
+      "precision@1": 0.25,
+      "mrr": 0.4114583333333333,
+      "misses": [
+        {
+          "question": "Is Shimla losing its winters?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0083,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0546,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "What direction has Lucknow's climate been moving?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0683,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.1049,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does anything in the Ahmedabad data look off?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0321,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        }
+      ],
+      "rows": [
+        {
+          "question": "Is Shimla losing its winters?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0083,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Have Ahmedabad's summers drifted since the nineties?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "02_climatology_and_anomalies.md",
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.03,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0546,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "What direction has Lucknow's climate been moving?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0683,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "How does Hyderabad this month measure against its usual September?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.042,
+          "hit": true,
+          "reciprocal_rank": 0.5
+        },
+        {
+          "question": "Put Nagpur's current spell next to what it saw twelve months ago",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0564,
+          "hit": true,
+          "reciprocal_rank": 0.333
+        },
+        {
+          "question": "Is Kolkata wetter or drier than it was three years back?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "01_weather_variables.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0504,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.1049,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does anything in the Ahmedabad data look off?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0321,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has Shimla thrown up any surprises this week?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0318,
+          "hit": true,
+          "reciprocal_rank": 0.5
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0581,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Something looks wrong with Lucknow's temperatures lately",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md",
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0472,
+          "hit": true,
+          "reciprocal_rank": 0.5
+        },
+        {
+          "question": "At what point does a storm get classified as a cyclone?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.1179,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Talk me through why the rains arrive when they do",
+          "gold": [
+            "03_indian_monsoon.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0322,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Is one scorching summer enough to prove anything?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0511,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Where's the line between weather and climate?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0864,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        }
+      ]
+    },
+    {
       "backend": "sentence-transformers",
       "split": "dev",
       "dim": 384,
-      "cases": 21,
-      "recall@4": 0.6190476190476191,
-      "recall@1": 0.47619047619047616,
-      "precision@1": 0.47619047619047616,
-      "mrr": 0.5198412698412699,
+      "cases": 29,
+      "recall@4": 0.5862068965517241,
+      "recall@1": 0.4827586206896552,
+      "precision@1": 0.4827586206896552,
+      "mrr": 0.514367816091954,
       "misses": [
         {
           "question": "How muggy is it in Chennai today?",
@@ -2092,6 +1973,66 @@
             "03_indian_monsoon.md"
           ],
           "top_score": 0.5103,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has Mumbai become rainier across the last decade?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.557,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is today's heat in Nagpur out of line with the norm?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.5364,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Set that against what Chennai usually sees in October",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.559,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does Delhi see more downpours now than it used to?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4744,
           "hit": false,
           "reciprocal_rank": 0.0
         }
@@ -2412,81 +2353,7 @@
           "top_score": 0.6527,
           "hit": true,
           "reciprocal_rank": 1.0
-        }
-      ]
-    },
-    {
-      "backend": "sentence-transformers",
-      "split": "test",
-      "dim": 384,
-      "cases": 8,
-      "recall@4": 0.5,
-      "recall@1": 0.5,
-      "precision@1": 0.5,
-      "mrr": 0.5,
-      "misses": [
-        {
-          "question": "Has Mumbai become rainier across the last decade?",
-          "gold": [
-            "05_interpreting_trends.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "01_weather_variables.md",
-            "03_indian_monsoon.md",
-            "03_indian_monsoon.md"
-          ],
-          "top_score": 0.557,
-          "hit": false,
-          "reciprocal_rank": 0.0
         },
-        {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "04_extreme_weather_criteria.md",
-            "04_extreme_weather_criteria.md",
-            "05_interpreting_trends.md",
-            "04_extreme_weather_criteria.md"
-          ],
-          "top_score": 0.5364,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Set that against what Chennai usually sees in October",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "04_extreme_weather_criteria.md",
-            "03_indian_monsoon.md",
-            "03_indian_monsoon.md"
-          ],
-          "top_score": 0.559,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "gold": [
-            "05_interpreting_trends.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "01_weather_variables.md",
-            "03_indian_monsoon.md",
-            "03_indian_monsoon.md"
-          ],
-          "top_score": 0.4744,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        }
-      ],
-      "rows": [
         {
           "question": "Has Mumbai become rainier across the last decade?",
           "gold": [
@@ -2610,14 +2477,418 @@
       ]
     },
     {
+      "backend": "sentence-transformers",
+      "split": "test",
+      "dim": 384,
+      "cases": 16,
+      "recall@4": 0.375,
+      "recall@1": 0.25,
+      "precision@1": 0.25,
+      "mrr": 0.3125,
+      "misses": [
+        {
+          "question": "Have Ahmedabad's summers drifted since the nineties?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4629,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.458,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "What direction has Lucknow's climate been moving?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4916,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "How does Hyderabad this month measure against its usual September?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.5018,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Put Nagpur's current spell next to what it saw twelve months ago",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3231,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is Kolkata wetter or drier than it was three years back?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.4264,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3173,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does anything in the Ahmedabad data look off?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3795,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.4761,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Something looks wrong with Lucknow's temperatures lately",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4257,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        }
+      ],
+      "rows": [
+        {
+          "question": "Is Shimla losing its winters?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3172,
+          "hit": true,
+          "reciprocal_rank": 0.5
+        },
+        {
+          "question": "Have Ahmedabad's summers drifted since the nineties?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4629,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.458,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "What direction has Lucknow's climate been moving?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4916,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "How does Hyderabad this month measure against its usual September?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.5018,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Put Nagpur's current spell next to what it saw twelve months ago",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3231,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is Kolkata wetter or drier than it was three years back?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.4264,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3173,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does anything in the Ahmedabad data look off?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.3795,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has Shimla thrown up any surprises this week?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.2159,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.4761,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Something looks wrong with Lucknow's temperatures lately",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.4257,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "At what point does a storm get classified as a cyclone?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.5826,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Talk me through why the rains arrive when they do",
+          "gold": [
+            "03_indian_monsoon.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.3814,
+          "hit": true,
+          "reciprocal_rank": 0.5
+        },
+        {
+          "question": "Is one scorching summer enough to prove anything?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.4183,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Where's the line between weather and climate?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.7127,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        }
+      ]
+    },
+    {
       "backend": "hybrid (RRF)",
       "split": "dev",
       "dim": 8576,
-      "cases": 21,
-      "recall@4": 0.8095238095238095,
-      "recall@1": 0.42857142857142855,
-      "precision@1": 0.42857142857142855,
-      "mrr": 0.5634920634920635,
+      "cases": 29,
+      "recall@4": 0.7241379310344828,
+      "recall@1": 0.4482758620689655,
+      "precision@1": 0.4482758620689655,
+      "mrr": 0.5459770114942528,
       "misses": [
         {
           "question": "How muggy is it in Chennai today?",
@@ -2676,6 +2947,66 @@
             "03_indian_monsoon.md"
           ],
           "top_score": 0.0323,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has Mumbai become rainier across the last decade?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0308,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is today's heat in Nagpur out of line with the norm?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0328,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Set that against what Chennai usually sees in October",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0328,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does Delhi see more downpours now than it used to?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0308,
           "hit": false,
           "reciprocal_rank": 0.0
         }
@@ -2996,81 +3327,7 @@
           "top_score": 0.0328,
           "hit": true,
           "reciprocal_rank": 1.0
-        }
-      ]
-    },
-    {
-      "backend": "hybrid (RRF)",
-      "split": "test",
-      "dim": 8576,
-      "cases": 8,
-      "recall@4": 0.5,
-      "recall@1": 0.5,
-      "precision@1": 0.5,
-      "mrr": 0.5,
-      "misses": [
-        {
-          "question": "Has Mumbai become rainier across the last decade?",
-          "gold": [
-            "05_interpreting_trends.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "04_extreme_weather_criteria.md",
-            "03_indian_monsoon.md",
-            "02_climatology_and_anomalies.md"
-          ],
-          "top_score": 0.0308,
-          "hit": false,
-          "reciprocal_rank": 0.0
         },
-        {
-          "question": "Is today's heat in Nagpur out of line with the norm?",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "04_extreme_weather_criteria.md",
-            "04_extreme_weather_criteria.md",
-            "05_interpreting_trends.md",
-            "01_weather_variables.md"
-          ],
-          "top_score": 0.0328,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Set that against what Chennai usually sees in October",
-          "gold": [
-            "02_climatology_and_anomalies.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "04_extreme_weather_criteria.md",
-            "03_indian_monsoon.md",
-            "04_extreme_weather_criteria.md"
-          ],
-          "top_score": 0.0328,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        },
-        {
-          "question": "Does Delhi see more downpours now than it used to?",
-          "gold": [
-            "05_interpreting_trends.md"
-          ],
-          "retrieved": [
-            "03_indian_monsoon.md",
-            "02_climatology_and_anomalies.md",
-            "03_indian_monsoon.md",
-            "01_weather_variables.md"
-          ],
-          "top_score": 0.0308,
-          "hit": false,
-          "reciprocal_rank": 0.0
-        }
-      ],
-      "rows": [
         {
           "question": "Has Mumbai become rainier across the last decade?",
           "gold": [
@@ -3192,428 +3449,335 @@
           "reciprocal_rank": 1.0
         }
       ]
+    },
+    {
+      "backend": "hybrid (RRF)",
+      "split": "test",
+      "dim": 8576,
+      "cases": 16,
+      "recall@4": 0.6875,
+      "recall@1": 0.3125,
+      "precision@1": 0.3125,
+      "mrr": 0.4114583333333333,
+      "misses": [
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0318,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is Kolkata wetter or drier than it was three years back?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "01_weather_variables.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.032,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.0318,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does anything in the Ahmedabad data look off?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0315,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.0328,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        }
+      ],
+      "rows": [
+        {
+          "question": "Is Shimla losing its winters?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0313,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Have Ahmedabad's summers drifted since the nineties?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0301,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Has the rain in Cherrapunji thinned out over time?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md"
+          ],
+          "top_score": 0.0318,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "What direction has Lucknow's climate been moving?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "05_interpreting_trends.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0315,
+          "hit": true,
+          "reciprocal_rank": 0.333
+        },
+        {
+          "question": "How does Hyderabad this month measure against its usual September?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.032,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Put Nagpur's current spell next to what it saw twelve months ago",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0328,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Is Kolkata wetter or drier than it was three years back?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "01_weather_variables.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.032,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Weigh this week's Jaipur heat against a typical year",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.0318,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Does anything in the Ahmedabad data look off?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0315,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Has Shimla thrown up any surprises this week?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.032,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "Is Cherrapunji's rainfall off the charts right now?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md"
+          ],
+          "top_score": 0.0328,
+          "hit": false,
+          "reciprocal_rank": 0.0
+        },
+        {
+          "question": "Something looks wrong with Lucknow's temperatures lately",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.0303,
+          "hit": true,
+          "reciprocal_rank": 0.25
+        },
+        {
+          "question": "At what point does a storm get classified as a cyclone?",
+          "gold": [
+            "04_extreme_weather_criteria.md"
+          ],
+          "retrieved": [
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md",
+            "01_weather_variables.md",
+            "05_interpreting_trends.md"
+          ],
+          "top_score": 0.0328,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Talk me through why the rains arrive when they do",
+          "gold": [
+            "03_indian_monsoon.md"
+          ],
+          "retrieved": [
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "04_extreme_weather_criteria.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0315,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Is one scorching summer enough to prove anything?",
+          "gold": [
+            "05_interpreting_trends.md"
+          ],
+          "retrieved": [
+            "05_interpreting_trends.md",
+            "03_indian_monsoon.md",
+            "03_indian_monsoon.md",
+            "02_climatology_and_anomalies.md"
+          ],
+          "top_score": 0.032,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        },
+        {
+          "question": "Where's the line between weather and climate?",
+          "gold": [
+            "02_climatology_and_anomalies.md"
+          ],
+          "retrieved": [
+            "02_climatology_and_anomalies.md",
+            "02_climatology_and_anomalies.md",
+            "05_interpreting_trends.md",
+            "01_weather_variables.md"
+          ],
+          "top_score": 0.0328,
+          "hit": true,
+          "reciprocal_rank": 1.0
+        }
+      ]
     }
-  ],
-  "groundedness": {
-    "cases": 46,
-    "mean_groundedness": 1.0,
-    "fully_grounded": 46,
-    "violations": [],
-    "rows": [
-      {
-        "question": "What is the weather in Mumbai right now?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "weather in Pune right now",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How is the weather in Chennai currently?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What is the temperature in Delhi at the moment?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Tell me the current humidity in Kolkata",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 12,
-        "grounded": 12,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How muggy is it in Chennai today?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Will rainfall increase this week in Pune?",
-        "intent": "forecast",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Is it going to rain in Chennai tomorrow?",
-        "intent": "forecast",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What is the temperature forecast for Delhi?",
-        "intent": "forecast",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Should I expect showers in Mumbai over the next few days?",
-        "intent": "forecast",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How windy will it get in Bengaluru this weekend?",
-        "intent": "forecast",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What is the weather trend in Mumbai?",
-        "intent": "trend",
-        "confidence": "medium",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How has the temperature in Delhi been changing?",
-        "intent": "trend",
-        "confidence": "medium",
-        "numbers_claimed": 12,
-        "grounded": 12,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Show me the long-term rainfall pattern in Pune",
-        "intent": "trend",
-        "confidence": "medium",
-        "numbers_claimed": 8,
-        "grounded": 8,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Has Kolkata been getting hotter over the years?",
-        "intent": "trend",
-        "confidence": "medium",
-        "numbers_claimed": 12,
-        "grounded": 12,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What does the historical wind data for Chennai look like?",
-        "intent": "trend",
-        "confidence": "medium",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How has the temperature in Delhi changed compared with previous years?",
-        "intent": "comparison",
-        "confidence": "medium",
-        "numbers_claimed": 14,
-        "grounded": 14,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How has rainfall in Pune compared with previous years?",
-        "intent": "comparison",
-        "confidence": "medium",
-        "numbers_claimed": 13,
-        "grounded": 13,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Is this month wetter in Mumbai than last year?",
-        "intent": "comparison",
-        "confidence": "medium",
-        "numbers_claimed": 13,
-        "grounded": 13,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Compare the current temperature in Jaipur with past years",
-        "intent": "comparison",
-        "confidence": "medium",
-        "numbers_claimed": 14,
-        "grounded": 14,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How does this season in Chennai stack up against earlier years?",
-        "intent": "comparison",
-        "confidence": "medium",
-        "numbers_claimed": 14,
-        "grounded": 14,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Why is the current weather in Chennai unusual?",
-        "intent": "anomaly",
-        "confidence": "medium",
-        "numbers_claimed": 12,
-        "grounded": 12,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Is anything abnormal about the weather in Mumbai?",
-        "intent": "anomaly",
-        "confidence": "medium",
-        "numbers_claimed": 9,
-        "grounded": 9,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Why is it so unusually hot in Delhi?",
-        "intent": "anomaly",
-        "confidence": "medium",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Has there been any extreme rainfall in Mumbai recently?",
-        "intent": "anomaly",
-        "confidence": "medium",
-        "numbers_claimed": 9,
-        "grounded": 9,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Is the weather in Nagpur behaving strangely?",
-        "intent": "anomaly",
-        "confidence": "medium",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Did Pune record anything out of the ordinary this month?",
-        "intent": "anomaly",
-        "confidence": "medium",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What is relative humidity?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What counts as a heat wave in India?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How much rain is officially called very heavy rainfall?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What is a climate normal?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Explain how the southwest monsoon works",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How many years of data do I need to claim a warming trend?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What does falling atmospheric pressure mean?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Give me the outlook for Jaipur over the next ten days",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 9,
-        "grounded": 9,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Has Mumbai become rainier across the last decade?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Is today's heat in Nagpur out of line with the norm?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 12,
-        "grounded": 12,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Set that against what Chennai usually sees in October",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Right this minute, how warm is Pune?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Put simply, what makes air feel sticky?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "What's the rain situation in Kolkata at present?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 12,
-        "grounded": 12,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Does Delhi see more downpours now than it used to?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "How do meteorologists decide something is a cold wave?",
-        "intent": "general",
-        "confidence": "low",
-        "numbers_claimed": 0,
-        "grounded": 0,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Anything freakish in the Pune numbers lately?",
-        "intent": "current",
-        "confidence": "high",
-        "numbers_claimed": 10,
-        "grounded": 10,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Roughly what will Bengaluru look like on Friday?",
-        "intent": "forecast",
-        "confidence": "high",
-        "numbers_claimed": 11,
-        "grounded": 11,
-        "ungrounded": [],
-        "score": 1.0
-      },
-      {
-        "question": "Line up this year's Mumbai monsoon beside the usual",
-        "intent": "trend",
-        "confidence": "medium",
-        "numbers_claimed": 8,
-        "grounded": 8,
-        "ungrounded": [],
-        "score": 1.0
-      }
-    ]
-  }
+  ]
 }

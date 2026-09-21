@@ -8,6 +8,7 @@ default, so `pytest` stays fast and deterministic:
 """
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 
 import numpy as np
@@ -15,7 +16,7 @@ import pandas as pd
 import pytest
 
 from src.analysis import anomalies, statistics, trends
-from src.agents.planner import PlannerAgent
+from src.agents.planner import INTENT_PATTERNS, PlannerAgent
 from src.core.models import Insight, QueryPlan
 from src.rag.chunker import split_sections
 from src.rag.embeddings import HashingEmbedder
@@ -179,6 +180,72 @@ def test_year_over_year_computes_percent_change():
 def test_rule_based_intent_routing(question, expected):
     plan = PlannerAgent()._rule_based(question)
     assert plan.intent == expected
+
+
+# Every phrasing below is absent from both evaluation splits on purpose.
+# The intent patterns were widened by synonym *family*, not by patching in
+# the exact questions that failed, and this is what makes that claim
+# checkable: if someone later "fixes" a regression by appending one literal
+# phrase, these stay red.
+@pytest.mark.parametrize(
+    "question,expected",
+    [
+        # forecast: vocabulary beyond "forecast"/"will"
+        ("What is the prognosis for Delhi?", "forecast"),
+        ("Give me the outlook for Chennai", "forecast"),
+        ("What do the days ahead look like in Pune?", "forecast"),
+        # ... including counts written as words, which the original
+        # `next \d+ days` could never match.
+        ("rain expected over the next fourteen days", "forecast"),
+        ("conditions for the coming fortnight", "forecast"),
+
+        # anomaly: "unusual" is not the only way to say it
+        ("Is anything bizarre going on in Pune?", "anomaly"),
+        ("Was that an unprecedented reading?", "anomaly"),
+        ("Does the Delhi series look wrong?", "anomaly"),
+
+        # trend: change over time, phrased many ways
+        ("Have temperatures drifted since the 1980s?", "trend"),
+        ("Is Delhi hotter than it used to be?", "trend"),
+        ("How has rainfall shifted across the past decade?", "trend"),
+
+        # comparison: two things held side by side
+        ("How does this measure against a typical year?", "comparison"),
+        ("Put Mumbai next to what Chennai saw", "comparison"),
+        ("Is it wetter than it was six months ago?", "comparison"),
+
+        # general: definitional phrasing that names no measurement
+        ("At what point is it called a cold wave?", "general"),
+        ("Walk me through the southwest monsoon", "general"),
+        ("What is the difference between weather and climate?", "general"),
+    ],
+)
+def test_intent_vocabulary_generalises_beyond_the_labelled_set(question, expected):
+    assert PlannerAgent()._rule_based(question).intent == expected
+
+
+def test_unrecognised_phrasing_still_defaults_to_current():
+    """The default is load-bearing, so pin it.
+
+    Widening the patterns must not change what happens when none of them
+    match: an unclassifiable question is a request for current conditions,
+    which is the cheapest path and the least wrong guess.
+    """
+    assert PlannerAgent()._rule_based("Mumbai").intent == "current"
+
+
+def test_intent_patterns_are_anchored_on_word_boundaries():
+    r"""Guards the documented `\b` failure mode.
+
+    A stem written without an explicit suffix, or a pattern that loses its
+    leading boundary, matches substrings of unrelated words and silently
+    mis-routes questions. Both ends are checked because the module comment
+    records a real bug where a *trailing* boundary killed stem matching.
+    """
+    for intent, pattern in INTENT_PATTERNS:
+        assert pattern.startswith(r"\b("), intent
+        assert pattern.endswith(r")\b"), intent
+        re.compile(pattern)  # must be a valid regex
 
 
 def test_planner_extracts_a_known_location():

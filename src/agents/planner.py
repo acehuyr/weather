@@ -22,10 +22,17 @@ from src.ingestion.geocoding import _FALLBACK
 from src.llm.client import get_llm
 from src.llm.prompts import PLANNER_SYSTEM, build_planner_prompt
 
+# Number words, so "the next ten days" is as matchable as "the next 10 days".
+# Written-out counts are how people actually type, and the original
+# `next \d+ days` silently missed every one of them.
+_COUNT = (r"(?:\d+|a few|several|one|two|three|four|five|six|seven|eight|"
+          r"nine|ten|eleven|twelve|fourteen|fifteen)")
+_PERIOD = r"(?:days?|weeks?|weekends?|months?|fortnights?)"
+
 # Checked in order - the first intent whose pattern matches wins, so the more
 # specific intents must come first.
 #
-# Two failure modes the evaluation harness caught, now handled here:
+# Failure modes the evaluation harness caught, now handled here:
 #
 #   * A trailing \b silently kills stem matching. "anomal" never matched
 #     "anomaly", because \b demands a non-word character after the stem.
@@ -34,31 +41,84 @@ from src.llm.prompts import PLANNER_SYSTEM, build_planner_prompt
 #     at all and landed on the "current" default. The unambiguous ones are
 #     checked first; the weaker phrasing stays last so it cannot outrank a
 #     real data request.
+#   * The vocabulary was far too narrow. On the v1 held-out split only 4 of
+#     12 questions reached the right intent, and every single miss collapsed
+#     to "current" - the default - because no pattern matched at all. That
+#     is the worst possible failure shape here: nothing downstream reads the
+#     raw question, so a forecast question planned as "current" fetches the
+#     wrong window and answers confidently about the wrong thing rather than
+#     degrading visibly.
+#
+#     The fix deliberately adds whole synonym *families* per intent rather
+#     than the specific phrases that failed. Patching in "outlook" alone
+#     would move the score without moving the capability; the point is that
+#     "prognosis" and "the days ahead" should work too, and neither appears
+#     in any labelled case.
 INTENT_PATTERNS = [
     # Phrasing that cannot be a request for measurements.
     ("general", r"\b(what is an?|what counts as|what does .+ mean|"
                 r"what do .+ mean|meaning of|define|definition|"
-                r"officially (?:called|classified|defined)|explain how|"
-                r"how does .+ work|how many years of data)\b"),
+                r"officially (?:called|classified|defined)|"
+                r"(?:gets?|get |is |be )classified as|"
+                r"explain how|how does .+ work|"
+                r"how many years of data|enough to (?:prove|claim|conclude)|"
+                r"at what point|difference between|line between|"
+                r"talk me through|walk me through|"
+                r"in simple terms|put simply|in plain english)\b"),
     ("anomaly", r"\b(unusual(?:ly)?|abnormal(?:ly)?|anomal(?:y|ies|ous)|"
-                r"strange(?:ly)?|odd|weird|why is|why are|why was|"
-                r"extreme(?:ly)?|record|out of the ordinary)\b"),
-    ("comparison", r"\b(compare[ds]?|comparison|versus|vs\.?|last year|"
-                   r"previous year|past years|earlier years|than before|"
-                   r"stack(?:s|ed)? up against)\b"),
-    ("trend", r"\b(trends?|over the (?:years|decade)|changing|changed|"
-              r"long[- ]term|historic(?:al|ally)?|pattern over|"
+                r"strange(?:ly)?|odd(?:ly)?|weird|freak(?:ish|y)?|bizarre|"
+                r"why is|why are|why was|"
+                r"extreme(?:ly)?|record|unprecedented|"
+                r"out of (?:the )?(?:ordinary|line|character|whack)|"
+                r"not normal|nothing normal|"
+                r"(?:look|feel|seem)(?:s|ing|ed)? (?:off|wrong|strange|odd)|"
+                r"(?:something|anything) (?:wrong|off|odd|strange)|"
+                r"wrong with)\b"),
+    ("comparison", r"\b(compare[ds]?|comparison|versus|vs\.?|"
+                   r"last year|previous year|past years|earlier years|"
+                   r"prior years|"
+                   r"than before|than (?:it |they )?(?:was|were)|"
+                   r"than (?:usual|normal|typical)|"
+                   r"(?:stack|line|weigh|measure|set|put|pit)(?:s|ed|d)?"
+                   r" .{0,40}?(?:up )?against|"
+                   r"stack(?:s|ed)? up against|"
+                   r"beside the|next to (?:what|the)|side by side|"
+                   r"usually sees|typical year|"
+                   rf"{_COUNT} (?:months?|years?) (?:ago|back)|"
+                   r"same (?:time|period|month) (?:last|previous))\b"),
+    ("trend", r"\b(trends?|"
+              r"(?:over|across|during|through) the "
+              r"(?:last |past )?(?:years|decades?|century)|"
+              r"(?:last|past) (?:decade|century)|"
+              r"changing|changed|long[- ]term|historic(?:al|ally)?|"
+              r"pattern over|over time|"
               r"this year|so far this year|year to date|"
-              r"getting (?:hotter|colder|wetter|drier))\b"),
-    ("forecast", r"\b(forecast|will|going to|expects?|expected|"
-                 r"next (?:week|month|weekend|few days|\d+ days)|"
-                 r"this (?:week|weekend|month)|tomorrow|coming days|"
-                 r"upcoming|predict)\b"),
-    ("current", r"\b(right now|currently|current|at the moment|today'?s weather|"
-                r"how is the weather|what is the weather)\b"),
+              r"since the (?:\d{4}s?|nineties|eighties|seventies|sixties)|"
+              r"than it used to|used to be|"
+              r"drift(?:s|ed|ing)?|"
+              r"becom(?:e|es|ing) (?:hotter|colder|wetter|drier|rainier|"
+              r"warmer|cooler)|"
+              r"more .{0,25}? now than|"
+              r"getting (?:hotter|colder|wetter|drier|warmer|cooler|"
+              r"rainier))\b"),
+    ("forecast", r"\b(forecast|outlook|prognosis|will|going to|"
+                 r"expects?|expected|"
+                 rf"next (?:{_COUNT}\s+)?{_PERIOD}|"
+                 rf"(?:coming|upcoming|following) (?:{_COUNT}\s+)?{_PERIOD}|"
+                 r"this (?:week|weekend|month)|over the (?:weekend|week)|"
+                 rf"{_PERIOD} ahead|"
+                 r"tomorrow|tonight|later today|coming days|"
+                 r"upcoming|predict|due to|likely to|chance of)\b"),
+    ("current", r"\b(right now|currently|current|at the moment|at present|"
+                r"this (?:very )?(?:moment|second|minute)|"
+                r"right this (?:minute|second)|"
+                r"today'?s weather|how is the weather|what is the weather|"
+                r"how'?s the weather|out there)\b"),
     # Weaker definitional phrasing - only after every data intent has missed.
-    ("general", r"\b(what is|what are|explain|how does|how do|why does)\b"),
+    ("general", r"\b(what is|what are|what makes|what causes|"
+                r"explain|how does|how do|why does|why do)\b"),
 ]
+
 
 # Matched by the locative regex but not actually a place we can geocode to a
 # useful point. "A heat wave in India" is a definition, not a city query.

@@ -265,10 +265,40 @@ def build_all(backends: list, report: dict) -> list:
 # Groundedness
 # --------------------------------------------------------------------------
 
-def evaluate_groundedness(limit: int = None) -> dict:
+class _FallbackWatcher(logging.Handler):
+    """Detects the Insight agent quietly answering from its template.
+
+    `settings.llm_enabled` only reports that a key is configured. On a free
+    tier a burst of 429s makes individual generations fail, and the agent
+    falls back to the template - which can only emit numbers the pipeline
+    just computed, and therefore scores a trivial 100% here.
+
+    Reporting that as a model-generated result is precisely the mislabelling
+    this section exists to prevent, so each case is watched and the ones the
+    model did not actually write are counted separately.
+    """
+
+    MARKER = "using template"
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.WARNING)
+        self.tripped = False
+
+    def emit(self, record: logging.LogRecord) -> None:
+        if self.MARKER in record.getMessage():
+            self.tripped = True
+
+
+
+def evaluate_groundedness(limit: int = None, sleep: float = 0.0) -> dict:
     """Run the real pipeline and check every number in the answer.
 
     Requires network access: each case fetches live and archived weather.
+
+    `sleep` paces the loop for the same reason the planner scorer takes it -
+    this is the heaviest LLM consumer in the harness, one generation per
+    case, and an unpaced run on a free tier spends its budget partway
+    through and finishes on degraded output.
     """
     from src.agents.orchestrator import get_orchestrator
 
@@ -276,9 +306,19 @@ def evaluate_groundedness(limit: int = None) -> dict:
     cases = CASES[:limit] if limit else CASES
     scores, rows = [], []
 
+    # Agent loggers hang off "weatheriq", which does not propagate further.
+    watcher = _FallbackWatcher()
+    logging.getLogger("weatheriq").addHandler(watcher)
+    fell_back = 0
+
     for index, case in enumerate(cases, start=1):
         print(f"  [{index}/{len(cases)}] {case.question}", flush=True)
+        watcher.tripped = False
         result = orchestrator.answer(case.question)
+        templated = watcher.tripped
+        fell_back += 1 if templated else 0
+        if sleep:
+            time.sleep(sleep)
 
         known: set = set()
         metrics.collect_known_numbers(result.analysis, known)
@@ -296,6 +336,7 @@ def evaluate_groundedness(limit: int = None) -> dict:
         rows.append({
             "question": case.question,
             "intent": result.plan.intent if result.plan else "",
+            "templated": templated,
             "confidence": insight.confidence,
             "numbers_claimed": score["claimed"],
             "grounded": score["grounded"],
@@ -303,11 +344,23 @@ def evaluate_groundedness(limit: int = None) -> dict:
             "score": round(score["score"], 3),
         })
 
+    logging.getLogger("weatheriq").removeHandler(watcher)
+
     return {
         "cases": len(rows),
         "mean_groundedness": metrics.mean(scores),
         "fully_grounded": sum(1 for r in rows if r["score"] == 1.0),
         "violations": [r for r in rows if r["score"] < 1.0],
+        # Which generator actually wrote these answers. Without this the two
+        # very different numbers this metric can produce are indistinguishable
+        # in the report: offline the template can only emit figures it just
+        # computed, so 100% is arithmetic rather than evidence, while with a
+        # model connected the same 100% is a real (if single-sample) result.
+        "llm_enabled": settings.llm_enabled,
+        "llm_label": settings.llm_label,
+        # How many answers the model did NOT write, despite a key being set.
+        "fell_back_to_template": fell_back,
+        "model_written": len(rows) - fell_back,
         "rows": rows,
     }
 
@@ -334,10 +387,14 @@ def render_report(report: dict) -> str:
         f"- Paraphrase cases: **{report['dataset']['paraphrases']}**",
         f"- By intent: {report['dataset']['by_intent']}",
         "",
-        "> **dev** cases were used to debug the rule-based patterns, so those",
-        "> scores are fitted and read high. **test** cases were written",
-        "> afterwards with phrasing absent from the keyword lists, and nothing",
-        "> was tuned against them. Quote the test column.",
+        "> **dev** cases are fair game for tuning, so those scores are",
+        "> fitted and read high. They include the 12 questions that were the",
+        "> v1 held-out split until their failures were used to broaden the",
+        "> intent patterns - spending a split is allowed, pretending you",
+        "> did not is not. **test** is a fresh 24-question split written",
+        "> before that change and not consulted during it.",
+        ">",
+        "> **Quote the test column.**",
         "",
         "## 1. Planning",
         "",
@@ -430,17 +487,70 @@ def render_report(report: dict) -> str:
 
     if report.get("groundedness"):
         block = report["groundedness"]
+        cases = block["cases"]
+        templated = block.get("fell_back_to_template", 0)
+        written = block.get("model_written", 0)
+        configured = block.get("llm_enabled")
+
+        if not configured:
+            generator = "offline template (no model connected)"
+        elif templated == 0:
+            generator = f"language model (`{block.get('llm_label')}`)"
+        elif written == 0:
+            generator = (
+                f"template - every call to `{block.get('llm_label')}` failed"
+            )
+        else:
+            generator = (
+                f"mixed: {written}/{cases} written by "
+                f"`{block.get('llm_label')}`, {templated} fell back to the "
+                "template"
+            )
+
         out += [
             "",
             "## 3. Groundedness",
             "",
+            f"- Generated by: **{generator}**",
             f"- Mean groundedness: **{pct(block['mean_groundedness'])}**",
-            f"- Fully grounded answers: **{block['fully_grounded']}/{block['cases']}**",
+            f"- Fully grounded answers: **{block['fully_grounded']}/{cases}**",
             "",
             "Every number in the answer is checked against the numbers the "
             "pipeline actually computed. IMD thresholds and years are excluded "
             "as system vocabulary rather than data claims.",
         ]
+
+        if configured and templated == 0:
+            out += [
+                "",
+                "> Measured with the model writing every answer, so it was "
+                "free to state a figure nothing computed. This is the number "
+                "that carries information - but generation is "
+                "non-deterministic, so one run is one sample. Run `--full` "
+                "several times and quote the worst, not the best.",
+            ]
+        elif templated:
+            out += [
+                "",
+                f"> **Only {written} of {cases} answers are evidence.** The "
+                "other "
+                f"{templated} fell back to the template after a failed "
+                "generation - almost always a free-tier rate limit - and the "
+                "template can only emit numbers the pipeline just computed, "
+                "so those score 100% by construction. Re-run when the limit "
+                "resets, or pace it harder with `--sleep`.",
+            ]
+        else:
+            out += [
+                "",
+                "> **This is the control, not the result.** With no model "
+                "connected the answers come from a template that can only "
+                "emit numbers the pipeline just computed, so a perfect score "
+                "is arithmetic - it shows the checker works end to end and "
+                "nothing more. Set a key and re-run `--full` for the number "
+                "worth quoting.",
+            ]
+
         if block["violations"]:
             out += ["", "### Ungrounded numbers", ""]
             for row in block["violations"]:
@@ -465,8 +575,9 @@ def main() -> int:
                         help="score only backends matching this substring, "
                              "e.g. --backend hashed")
     parser.add_argument("--sleep", type=float, default=0.0,
-                        help="seconds to pause between LLM planner calls, to "
-                             "stay under a free-tier rate limit (try 2.0)")
+                        help="seconds to pause between LLM calls, in both "
+                             "the planner and groundedness passes, to stay "
+                             "under a free-tier rate limit (try 2.0)")
     args = parser.parse_args()
 
     logging.disable(logging.INFO)
@@ -504,7 +615,9 @@ def main() -> int:
 
     if args.full:
         print("Groundedness (live data)...")
-        report["groundedness"] = evaluate_groundedness(limit=args.limit)
+        report["groundedness"] = evaluate_groundedness(
+            limit=args.limit, sleep=args.sleep
+        )
 
     markdown = render_report(report)
     (RESULTS_DIR / "report.md").write_text(markdown, encoding="utf-8")

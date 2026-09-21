@@ -162,11 +162,11 @@ src/ui/dashboard.py         hero, departure scale, forecast views
 src/ui/weather_map.py       Folium map over OpenStreetMap tiles
 src/cli.py                  command-line interface
 
-eval/dataset.py             46 labelled questions (dev + held-out test)
+eval/dataset.py             70 labelled questions (46 dev / 24 held-out)
 eval/metrics.py             accuracy, F1, Recall@k, MRR, groundedness
 eval/results/report.md      latest measured results
 
-tests/                      63 offline tests + 1 live test
+tests/                      89 offline tests + 1 live test
 scripts/run_eval.py         the evaluation harness
 scripts/check_ui.py         headless UI smoke check
 scripts/fetch_model.py      downloads MiniLM (PyTorch files only)
@@ -251,31 +251,50 @@ they coexist and `hybrid` queries both.
 
 ### Measured results
 
-From `eval/results/report.md`, Recall@4 on the held-out test split — the
-metric that matters most for RAG, because the generator reads *every*
-retrieved chunk, not just the first:
+From `eval/results/report.md`, Recall@4 — the metric that matters most for
+RAG, because the generator reads *every* retrieved chunk, not just the first:
 
-| Backend | Recall@4 (dev) | Recall@4 (test) | MRR (test) |
+| Backend | Recall@4 (dev, n=29) | Recall@4 (test, n=16) | MRR (test) |
 |---|---|---|---|
-| hashed TF-IDF | 76.2% | 37.5% | 0.281 |
-| sentence-transformers | 61.9% | 50.0% | 0.500 |
-| **hybrid (RRF)** | **81.0%** | **50.0%** | **0.500** |
+| hashed TF-IDF | 65.5% | **68.8%** | 0.411 |
+| sentence-transformers | 58.6% | 37.5% | 0.312 |
+| **hybrid (RRF)** | **72.4%** | **68.8%** | 0.411 |
 
-The interesting finding is that neither backend dominates. **Lexical retrieval
-wins when the question reuses the corpus's vocabulary; semantic retrieval wins
-when it paraphrases.** On dev, where questions are phrased close to the source
-text, TF-IDF beats MiniLM outright. On the held-out split, where the phrasing
-is deliberately different ("downpours", "sticky", "out of line with the norm"),
-it collapses from 76% to 38% while MiniLM holds at 50%.
+**The honest headline: widening the split overturned the previous finding.**
+
+This README used to claim that lexical retrieval wins when a question reuses
+the corpus's vocabulary while semantic retrieval wins when it paraphrases.
+That read was drawn from an 8-case test split where TF-IDF scored 37.5% and
+MiniLM 50.0% — a one-question gap. Doubling the split to 16 cases reversed
+it: TF-IDF now leads on held-out paraphrases, 68.8% to 37.5%, and MiniLM is
+the weakest of the three on both splits.
+
+The mechanism was plausible and the measurement did not support it. That is
+worth more in a report than a tidy story, and it is the concrete payoff of
+enlarging the labelled set — the caveat the previous version flagged was
+not decoration, it was load-bearing.
+
+What survives is the **argument for fusion, in a weaker and more defensible
+form**. Hybrid RRF is top on dev and ties the best backend on test; across
+both splits it is never the worst. That is the realistic case for combining
+retrievers — not that fusion wins big, but that it removes the risk of
+picking the wrong single backend for phrasing you have not seen.
 
 Fusing by *rank* rather than score is what makes combining them safe — a
 hashed TF-IDF cosine and a MiniLM cosine are not on comparable scales, so
 averaging them would just let whichever produces bigger numbers win.
 
-**Caveat worth stating in your report:** the test split is 8 retrieval cases.
-The 37.5% → 50.0% gap is a one-question difference. The *direction* is
-consistent with the mechanism, but the magnitude is not precise. Widening the
-labelled set is the single highest-value thing you can still do.
+**Caveat, still worth stating:** 16 retrieval cases means one question is
+worth 6.25 points. The split is twice the size it was and the gaps are now
+wider than a single case, but this is not a precise measurement, and the
+direction is what to quote. Sampling questions from real usage remains the
+highest-value thing left to do.
+
+**A note on the dev column.** It dropped (TF-IDF 76.2% → 65.5%) because dev
+absorbed the 12 retired held-out questions, which are deliberately harder
+than the originals. The number got worse because the test got harder, not
+because retrieval did — comparing it against the figure in an older report
+would be comparing two different exams.
 
 ### Editing the knowledge base
 
@@ -325,7 +344,7 @@ python scripts/run_eval.py --backend hashed     # one embedding backend only
 
 Writes `eval/results/report.md` and `report.json`.
 
-`eval/dataset.py` holds 46 hand-labelled questions with expected intent,
+`eval/dataset.py` holds 70 hand-labelled questions with expected intent,
 location, variables and — where the answer genuinely depends on the knowledge
 base — the document that should be retrieved.
 
@@ -333,15 +352,53 @@ base — the document that should be retrieved.
 
 The set is split deliberately:
 
-- **dev (34 cases)** debugged the rule-based patterns. Scores on it are
-  **fitted** and read high.
-- **test (12 cases)** was written *afterwards*, using phrasing absent from the
-  keyword lists ("outlook", "at present", "out of line with the norm",
-  "downpours"). Nothing was tuned against it.
+- **dev (46 cases)** is fair game for tuning, so scores on it are **fitted**
+  and read high. It currently sits at 100% intent accuracy, which is a
+  statement about the patterns having been debugged against it and nothing
+  else.
+- **test (24 cases)** was written *before* the code it measures and was not
+  consulted while that code changed. This is the split that carries the
+  honest number.
 
 **Quote the test column.** Reporting the dev number as if it were a
 generalisation result is the most common way a project like this overstates
 itself.
+
+#### A split gets spent when you tune against it
+
+The original held-out set was 12 questions, and the rule-based planner scored
+**33.3%** on it — 8 of 12 misrouted, every single one collapsing to the
+`current` default because no pattern matched at all. Fixing that meant
+reading those failures, and a case you have read and fixed against is a dev
+case whatever the label says. So those 12 moved into `DEV_CASES`, and a new
+24-question split was written before the patterns were touched.
+
+That ordering is the entire value of the number. A held-out set written
+*after* the fix, or quietly edited once its failures were known, measures
+memorisation and reports it as generalisation.
+
+| Planner (rule-based) | dev | test |
+|---|---|---|
+| v1 patterns | 82.6% | 33.3% *(12 cases)* |
+| v2 patterns | 100% | **79.2%** *(24 cases)* |
+
+The patterns were widened by synonym **family**, not by pasting in the
+phrases that failed — adding `outlook` alone moves the score without moving
+the capability. `tests/test_pipeline.py` pins that distinction with 17
+phrasings that appear in neither split (`prognosis`, `the days ahead`,
+`drifted since the 1980s`, `next to what Chennai saw`): if someone later
+patches a regression with one literal phrase, those tests stay red.
+
+The five remaining test failures are phrases deliberately left unhandled
+(`losing its winters`, `thrown up any surprises`, `off the charts`,
+`in for`, `direction ... moving`). Adding them now would spend this split
+too, for a number that would mean less than the one it replaced.
+
+**The caveat to state out loud:** the same author wrote both the patterns and
+the v2 split. That is strictly better than v1, which was tuned against
+directly, but it is not the same as a split written by someone else or
+harvested from real user logs. Sampling questions from actual usage is the
+honest next step, and the one that would let this number carry real weight.
 
 ### Three things are measured
 
@@ -363,6 +420,19 @@ the metric is measuring itself. That run is the **control**: it establishes
 the checker works end to end. The number that carries information is the one
 measured with a language model connected, where the model is free to write a
 figure nothing produced. Run `--full` in both modes and report both.
+
+**The report now states which one you are looking at**, because the two are
+indistinguishable otherwise and a bare `100.0%` reads as proof the model does
+not hallucinate. The harness records the generator per case and prints one of
+three headers: model-written, offline template, or **mixed**.
+
+Mixed is the common one and the easiest to misread. A key being configured
+does not mean the model answered — on a free tier a burst of 429s makes
+individual generations fail and the Insight agent falls back to its template,
+which scores a trivial 100%. `settings.llm_enabled` cannot see that, so the
+harness watches for the fallback directly and reports how many answers are
+actually evidence. If the header says 40 of 70 were templated, the headline
+score is mostly arithmetic and the run needs redoing with a longer `--sleep`.
 
 **One clean run is not proof.** Generation is non-deterministic, so a 100%
 score is one sample, not a guarantee. An earlier LLM-connected run scored
@@ -386,7 +456,7 @@ planner never made. Two tests now pin this down.
 ## Testing
 
 ```bash
-pytest                       # 63 offline tests, ~0.6s
+pytest                       # 89 offline tests, ~0.7s
 pytest -m network            # adds the live end-to-end test
 python scripts/check_ui.py   # headless Streamlit smoke check
 ```

@@ -23,15 +23,14 @@ locally and will fail to build or get OOM-killed on the free tier.
 
 ## 1. Put the project on GitHub
 
-It is not a git repository yet.
+Already done — the repository exists and `main` is pushed. To ship later
+work, commit and push as usual:
 
 ```bash
-git init
-git add .
-git commit -m "Weather Insight Engine"
+git push
 ```
 
-Check what you are about to publish **before** pushing:
+Check what you are about to publish **before** every push:
 
 ```bash
 git status --short
@@ -39,18 +38,30 @@ git status --short
 
 `.env` must not appear. It is gitignored, and it holds your Groq key. If you
 ever see it listed, stop and fix `.gitignore` first — a key pushed to GitHub
-is a key you have to revoke.
-
-Then create an empty repository on GitHub and push:
+is a key you have to revoke. To confirm it never has been:
 
 ```bash
+git log --all --oneline -- .env
+```
+
+Silence is the answer you want.
+
+A **public** repository is fine and is what the free tier expects. Nothing
+secret is in the code; the key lives in step 3.
+
+<details>
+<summary>Starting over from a fresh clone or a new remote</summary>
+
+```bash
+git init
+git add .
+git commit -m "Weather Insight Engine"
 git remote add origin https://github.com/<you>/<repo>.git
 git branch -M main
 git push -u origin main
 ```
 
-A **public** repository is fine and is what the free tier expects. Nothing
-secret is in the code; the key lives in step 3.
+</details>
 
 ---
 

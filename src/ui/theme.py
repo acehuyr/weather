@@ -32,8 +32,12 @@ INK = "#0C1119"        # page
 PANEL = "#141B26"      # card
 PANEL_2 = "#1B2431"    # raised
 LINE = "#24303F"       # hairline
-TEXT = "#E4EBF3"
-MUTED = "#7C8CA3"
+TEXT = "#E8EEF6"
+# Lifted from #7C8CA3: secondary text sits on --panel at small sizes, and the
+# old value cleared 4.5:1 only on the page ground, not on a card.
+MUTED = "#93A2B8"
+# Faintest tier - decoration and rules only, never information.
+FAINT = "#5E6C80"
 
 # The anomaly ramp. Doubles as the palette, because on this page colour
 # always means temperature.
@@ -143,7 +147,8 @@ CSS = f"""
 
 :root {{
   --ink:{INK}; --panel:{PANEL}; --panel2:{PANEL_2}; --line:{LINE};
-  --text:{TEXT}; --muted:{MUTED}; --accent:{ACCENT}; --rain:{RAIN};
+  --text:{TEXT}; --muted:{MUTED}; --faint:{FAINT};
+  --accent:{ACCENT}; --rain:{RAIN};
   --cold:{COLD}; --warm:{WARM}; --hot:{HOT};
 }}
 
@@ -208,7 +213,13 @@ h1, h2, h3, h4 {{
   gap:3px; background:var(--panel); border:1px solid var(--line);
   border-radius:9px; padding:4px; margin-bottom:22px;
   width:fit-content; max-width:100%;
+  /* Wrap to a second row rather than becoming a horizontal scroller.
+     Streamlit's default overflow hides destinations behind arrow glyphs,
+     which on a phone means navigation the user cannot see exists. */
+  flex-wrap:wrap; overflow:visible !important;
 }}
+/* Kill the arrow affordances Streamlit injects for the scrolling case. */
+.stTabs [data-testid="stTabsScrollButton"] {{ display:none !important; }}
 .stTabs [role="tab"],
 .stTabs [data-baseweb="tab"] {{
   height:36px; padding:0 20px; border-radius:6px; border-bottom:none;
@@ -395,12 +406,109 @@ h1, h2, h3, h4 {{
   font-size:.68rem; color:var(--muted); margin:2px 9px 2px 0;
 }}
 
-/* ---- chat ---- */
+/* ---- conversation ----
+   The failure this replaces: user turns and assistant turns were the same
+   dark card, the transcript lived in a fixed-height scroller so the question
+   scrolled out of sight, and the composer looked exactly like the six
+   suggestion buttons above it. Nobody could tell what they had asked or
+   where to ask the next thing.
+
+   The three rules now: a user turn is visually the opposite of an assistant
+   turn, the question stays attached to its answer, and exactly one element
+   on the page reads as "type here". */
+
+/* Streamlit's own message wrapper carries avatars and its own frame. Strip
+   both; the turn markup below does the work. */
 .stChatMessage {{
-  background:var(--panel); border:1px solid var(--line);
-  border-radius:6px; padding:12px 14px;
+  background:transparent; border:none; padding:0; gap:0;
 }}
-[data-testid="stChatInput"] {{ border-color:var(--line); }}
+.stChatMessage [data-testid="stChatMessageAvatar"],
+.stChatMessage [data-testid="chatAvatarIcon-user"],
+.stChatMessage [data-testid="chatAvatarIcon-assistant"] {{ display:none; }}
+
+/* The user's turn: right-aligned, accent-tinted, tight. Alignment alone
+   carries authorship, so it survives without colour. */
+.turn-you {{
+  display:flex; justify-content:flex-end; margin:18px 0 8px;
+}}
+.turn-you .bubble {{
+  max-width:min(80%, 620px);
+  background:rgba(53,196,181,.10);
+  border:1px solid rgba(53,196,181,.34);
+  border-radius:12px 12px 3px 12px;
+  padding:11px 15px; font-size:.95rem; line-height:1.55;
+  color:var(--text);
+}}
+.turn-label {{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.62rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint); margin-bottom:5px; display:block;
+}}
+.turn-you .turn-label {{ text-align:right; color:var(--accent); opacity:.8; }}
+
+/* The assistant's turn: full width, flat panel, left rule in the accent so
+   the eye can find where each answer starts when scanning a long thread.
+   Keyed by container rather than class - the answer body is its own
+   st.markdown call, so a raw-HTML wrapper would close before it. */
+[class*="st-key-answer_"] {{
+  border-left:2px solid var(--accent);
+  background:var(--panel);
+  border-radius:0 8px 8px 0;
+  padding:14px 18px; margin:0 0 6px;
+}}
+[class*="st-key-answer_"] p {{ font-size:.95rem; line-height:1.65; }}
+[class*="st-key-answer_"] [data-testid="stExpander"] {{
+  background:var(--panel2); margin-top:12px;
+}}
+
+/* Answer header: where, what kind of question, how well supported. Reads as
+   a sentence rather than a row of debug pills. */
+.answer-meta {{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  padding-bottom:10px; margin-bottom:11px;
+  border-bottom:1px solid var(--line);
+}}
+
+/* Separates one exchange from the next. Without it a long thread reads as
+   one undifferentiated column of text. */
+.turn-rule {{
+  border:none; border-top:1px solid var(--line);
+  margin:22px 0 0; opacity:.55;
+}}
+
+/* ---- the composer ----
+   Deliberately the loudest interactive element in the Ask panel: a thicker
+   accent border, a raised surface and real height. Nothing else on the page
+   is allowed to look like this. */
+[data-testid="stChatInput"] {{
+  background:var(--panel2);
+  border:1.5px solid rgba(53,196,181,.45);
+  border-radius:10px;
+  box-shadow:0 0 0 4px rgba(53,196,181,.05);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}}
+[data-testid="stChatInput"]:focus-within {{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(53,196,181,.13);
+}}
+[data-testid="stChatInput"] textarea {{
+  font-size:.95rem; min-height:46px;
+}}
+[data-testid="stChatInput"] textarea::placeholder {{
+  color:var(--muted); opacity:.9;
+}}
+/* Keeps the composer on screen as the thread grows, which is what the old
+   fixed-height transcript container was working around. */
+.st-key-composer {{
+  position:sticky; bottom:0; z-index:5;
+  background:linear-gradient(180deg, rgba(12,17,25,0) 0%, var(--ink) 22%);
+  padding:14px 0 6px; margin-top:8px;
+}}
+.composer-hint {{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.64rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--faint); margin-bottom:7px;
+}}
 
 /* ---- sources ---- */
 .src-card {{
@@ -444,27 +552,30 @@ h1, h2, h3, h4 {{
   background:#2FB0A3; border-color:#2FB0A3; color:{INK};
 }}
 
-/* Sample prompts are suggestions, not commands: left-aligned, lighter, and
-   they lift on hover rather than looking like a row of submit buttons.
+/* Suggestions are pills, not panels.
+   Previously these were six full-width bordered rectangles stacked directly
+   above a seventh that happened to be the text input - seven identical
+   shapes, one of which you type into. Shape is now the differentiator:
+   suggestions are short, fully rounded and quiet; the composer is a wide
+   square-cornered field with an accent border. They cannot be confused.
+
    Two notes: a `help=` tooltip wraps the button in a span, so these use
    descendant selectors; and Streamlit's own rules win on specificity for
    background and alignment, so those two are forced. */
 .st-key-samples .stButton button {{
   background:transparent !important;
-  justify-content:flex-start !important;
+  justify-content:center !important;
   border:1px solid var(--line);
-  color:var(--muted); font-weight:400; min-height:44px;
-  padding-left:14px;
-}}
-.st-key-samples .stButton button > div {{
-  width:100%; justify-content:flex-start !important; text-align:left;
+  border-radius:999px;
+  color:var(--muted); font-weight:400;
+  min-height:40px; padding:.3rem 1rem;
 }}
 .st-key-samples .stButton button:hover {{
   background:var(--panel) !important; color:var(--text);
-  border-color:var(--accent);
+  border-color:rgba(53,196,181,.5);
 }}
 .st-key-samples .stButton button p {{
-  font-size:.85rem; text-align:left; width:100%;
+  font-size:.84rem; width:100%;
 }}
 
 /* ---- inputs ---- */
@@ -518,6 +629,106 @@ hr, [data-testid="stDivider"] {{ border-color:var(--line); }}
 /* Streamlit's deploy button is noise in a demo. */
 [data-testid="stToolbar"] {{ opacity:.25; }}
 [data-testid="stToolbar"]:hover {{ opacity:1; }}
+
+/* ---- location bar ----
+   Promoted out of the sidebar, which was collapsed by default on mobile and
+   therefore hid the app's primary control behind a chevron. */
+.placebar {{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:9px 14px; margin-bottom:18px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px;
+}}
+.placebar .pin {{ color:var(--accent); font-size:.95rem; line-height:1; }}
+.placebar .where {{
+  font-family:'IBM Plex Sans Condensed', sans-serif;
+  font-weight:600; font-size:1rem; color:var(--text);
+}}
+.placebar .coord {{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.7rem; color:var(--faint);
+}}
+/* The location form sits inline, so it drops Streamlit's default form
+   chrome and vertical stacking margins. */
+[data-testid="stForm"] {{
+  border:none; padding:0; background:transparent;
+}}
+/* Streamlit stacks columns into full-width rows below ~640px, which turned
+   this three-column form into three stacked blocks and pushed the app's
+   navigation off the first screen. The field still takes its own row; the
+   two buttons share the next one. */
+@media (max-width:640px) {{
+  [data-testid="stForm"] [data-testid="stHorizontalBlock"] {{
+    flex-direction:row; flex-wrap:wrap; gap:8px;
+  }}
+  [data-testid="stForm"] [data-testid="stHorizontalBlock"]
+    > [data-testid="stColumn"]:first-child {{ flex:1 1 100%; min-width:100%; }}
+  [data-testid="stForm"] [data-testid="stHorizontalBlock"]
+    > [data-testid="stColumn"]:not(:first-child) {{
+      flex:1 1 0; min-width:0;
+  }}
+}}
+
+/* ---- section headings ----
+   What replaced the dashboard's second tab bar. Sections stack on one
+   scroll, each announced by a rule and a label, so nothing is hidden behind
+   navigation the user has to discover. */
+.section {{
+  display:flex; align-items:center; gap:12px;
+  margin:30px 0 14px;
+}}
+.section h2 {{
+  font-size:1.02rem; margin:0; white-space:nowrap;
+  font-family:'IBM Plex Sans Condensed', sans-serif;
+}}
+.section .rule {{ flex:1; height:1px; background:var(--line); }}
+.section .note {{
+  font-size:.78rem; color:var(--muted); white-space:nowrap;
+}}
+
+/* ---- the verdict ----
+   The plain sentence leads; the statistics follow it. The reverse of what
+   this element used to do. */
+.verdict {{
+  font-family:'IBM Plex Sans Condensed', sans-serif;
+  font-size:1.18rem; font-weight:600; line-height:1.38;
+  margin:2px 0 6px;
+}}
+.verdict-sub {{
+  font-size:.88rem; color:var(--muted); line-height:1.6;
+  max-width:60ch;
+}}
+
+/* ---- agent timeline ----
+   Replaces a raw st.dataframe of the trace. An examiner should be able to
+   read the pipeline at a glance and see where the time went. */
+.stage {{
+  display:flex; align-items:baseline; gap:12px;
+  padding:8px 0; border-bottom:1px solid var(--line);
+}}
+.stage:last-child {{ border-bottom:none; }}
+.stage-dot {{
+  width:7px; height:7px; border-radius:50%; flex:none;
+  transform:translateY(-1px);
+}}
+.stage-name {{
+  font-family:'IBM Plex Sans Condensed', sans-serif;
+  font-weight:600; font-size:.88rem; min-width:104px;
+}}
+.stage-note {{ font-size:.82rem; color:var(--muted); flex:1; }}
+.stage-ms {{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.74rem; color:var(--faint); white-space:nowrap;
+}}
+
+/* ---- source cards ----
+   A bare similarity float meant nothing to a reader. The bar gives it a
+   scale and the label gives it a meaning. */
+.src-strength {{
+  height:3px; border-radius:2px; background:var(--line);
+  margin:7px 0 6px; overflow:hidden;
+}}
+.src-strength i {{ display:block; height:100%; background:var(--accent); }}
+.src-body {{ font-size:.82rem; color:var(--muted); line-height:1.6; }}
 
 /* ---- accessibility floor ---- */
 *:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}

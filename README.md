@@ -45,8 +45,9 @@ Answers are stiff without a language model. To fix that:
 GROQ_API_KEY=gsk_your_key_here
 ```
 
-Restart the app. The sidebar's **model** row switches from `not connected` to
-the model name, and answers become conversational and follow-up aware.
+Restart the app. The **System status** panel under *How it works* switches its
+**language model** row from `not connected` to the model name, and answers
+become conversational and follow-up aware.
 
 **If you get a 404 saying the model does not exist**, Groq has retired that
 model ID. This is *not* an authentication problem — a bad key returns 401, not
@@ -60,27 +61,37 @@ python scripts/list_models.py
 ### The three interfaces
 
 ```bash
-streamlit run src/ui/app.py                 # Web UI: chat, map, dashboard
+streamlit run src/ui/app.py                 # Web UI: now, map, ask
 python -m src.cli demo                      # CLI, runs sample questions
 uvicorn src.api.main:app --reload           # REST API, docs at /docs
 ```
 
-The web UI has four tabs:
+A location bar sits above the navigation on every screen — one field, Enter
+submits, with **Near me** and your recent places beside it. There is no
+sidebar: the control people need most should not be behind a chevron that
+mobile collapses by default.
 
-- **Chat** — conversational Q&A that remembers context, with a *Show the
-  working* panel under every answer exposing the data, sources and agent trace
+Below it, one level of navigation and four destinations:
+
+- **Now** — current conditions, and directly beneath them the verdict this
+  project exists to give: *"Slightly warmer than usual for the date"*, in
+  words, before any statistics. Then *Today*, *Next 10 days* and *Next 48
+  hours* as sections on one scroll, and the full seven-agent analysis at the
+  bottom for anyone who wants it.
 - **Map** — live weather on and around your location, colour-coded by
   temperature with rainfall circles
-- **Dashboard** — hero current conditions, then four sub-views: *Today*
-  (day/night summary, hourly chart, secondary metrics, outlook), *Next 48
-  hours*, *10 days* (day cards + a low-to-high range chart), and **Is this
-  normal?**
-- **How it works** — architecture and measured results, for demos
+- **Ask** — conversational Q&A that remembers context. Your question is shown
+  back to you above every answer, and a *Show the working* panel under each
+  one exposes the plan, the agent timeline, the retrieved sources and the
+  data.
+- **How it works** — architecture, measured results and system status, for
+  demos
 
-The *Is this normal?* sub-view is the one a normal weather app doesn't have:
-it runs the full agent pipeline on the displayed location, pulls a ten-year
-baseline, and reports whether current conditions are actually unusual — with
-the evidence panel attached.
+The verdict on **Now** is what a normal weather app doesn't have. It reads
+straight from a cached ten-year baseline, so it is on screen when the page
+loads rather than behind a button; running the full pipeline — history,
+anomaly detection and retrieval, with the evidence panel attached — is a
+separate, optional step.
 
 ---
 
@@ -156,7 +167,7 @@ src/rag/                    chunker, embeddings, vector store, retriever
 src/llm/                    provider abstraction (Groq / Claude) + prompts
 src/agents/                 the seven agents + orchestrator
 src/api/                    FastAPI service
-src/ui/app.py               Streamlit interface (chat, map, dashboard)
+src/ui/app.py               Streamlit interface (now, map, ask, how it works)
 src/ui/theme.py             design tokens, typography, Plotly styling
 src/ui/dashboard.py         hero, departure scale, forecast views
 src/ui/weather_map.py       Folium map over OpenStreetMap tiles
@@ -181,11 +192,17 @@ and interface colour cannot drift apart. The direction:
 
 **The thesis is departure, not temperature.** Every weather app shows you 31
 degrees. This one exists to say whether 31 is unusual *here, today*. So the
-hero's signature element is a **departure scale**: a track with the ten-year
-normal for this calendar date at its centre, one standard deviation shaded,
-and a marker where today actually sits. It reads the project's whole argument
-in one graphic, and it's computed by the same `_doy_normals` the anomaly agent
-uses — so the headline and the analysis tab can never disagree.
+hero leads with that verdict as a sentence — *"Slightly warmer than usual for
+the date"* — and supports it with a **departure scale**: a track with the
+ten-year normal for this calendar date at its centre, one standard deviation
+shaded, and a marker where today actually sits. It reads the project's whole
+argument in one graphic, and it's computed by the same `_doy_normals` the
+anomaly agent uses — so the headline and the full analysis can never disagree.
+
+Reading order is the design decision. An earlier version led with
+`DEPARTURE FROM NORMAL` and `dashed band = ±1σ (1.1°)`, which stated the best
+idea in the project in a language only a meteorologist reads. The statistics
+are still there; they are the footnote now, not the headline.
 
 **Colour is data.** The palette is a cold-to-hot ramp borrowed from synoptic
 charts, and it doubles as the temperature encoding. One chrome accent

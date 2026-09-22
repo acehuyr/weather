@@ -13,7 +13,12 @@ groq>=0.11.0
 # ---- API + UI ----
 fastapi>=0.110.0
 uvicorn[standard]>=0.27.0
-streamlit>=1.32.0
+# 1.50 is a real floor, not a guess. The UI uses `width="stretch"` (which
+# replaced use_container_width), `st.container(key=...)` for the st-key-*
+# hooks the chat styling targets, and the [theme] borderColor / linkColor /
+# headingFont / baseRadius options in .streamlit/config.toml. On the old
+# >=1.32 floor a fresh deploy could resolve to a version missing all four.
+streamlit>=1.50.0
 plotly>=5.19.0
 
 # ---- Map (both free, no API key) ----

@@ -2,13 +2,20 @@
 
     streamlit run src/ui/app.py
 
-Four tabs, because the app serves two different people: someone who wants an
-answer, and an examiner who wants to see how the answer was produced.
+The app serves two people at once: someone who wants to know about the
+weather, and an examiner who wants to see how the answer was produced. The
+first one comes first. Nothing on the way to an answer mentions agents,
+retrieval or embeddings; all of that lives one deliberate click away.
 
-    Chat       conversational Q&A, with the evidence one click away
-    Map        live weather on and around a place
-    Dashboard  current conditions and charts at a glance
-    How it works   architecture, agents, measured results
+    Now            conditions, and whether they are unusual here
+    Map            live weather on and around a place
+    Ask            conversational Q&A, evidence attached to each answer
+    How it works   architecture, measured results, system status
+
+One level of navigation. The previous version nested four sub-tabs inside
+the dashboard tab, which at phone width collapsed into two rows of
+horizontal scrollers and hid half the app. Sections stack on one scroll
+instead.
 
 Runs the orchestrator in-process rather than calling the FastAPI service, so
 the UI works standalone. The API exists for programmatic clients.
@@ -56,7 +63,10 @@ st.set_page_config(
     page_title="Weather Insight Engine",
     page_icon="⛅",
     layout="wide",
-    initial_sidebar_state="expanded",
+    # There is no sidebar any more. The location control used to live in it,
+    # which meant that on a phone - where Streamlit collapses the sidebar by
+    # default - the app's primary control was hidden behind a chevron.
+    initial_sidebar_state="collapsed",
 )
 
 # All visual design lives in src/ui/theme.py - one place for tokens,
@@ -64,23 +74,23 @@ st.set_page_config(
 # apart.
 theme.inject()
 
-# (button label, question actually sent) - a full question does not fit on a
-# chip, and a truncated label tells the reader nothing.
+# Label and payload are the same string. They used to differ - a chip read
+# "vs previous years" and sent a full sentence that appeared only in a hover
+# tooltip, which is invisible on touch - so you could not tell what you had
+# just asked.
 SAMPLES = [
-    ("Weather now", "What's the weather like in Mumbai right now?"),
-    ("Rain this week?", "Will it rain in Pune this week?"),
-    ("vs previous years",
-     "How has Delhi's temperature changed vs previous years?"),
-    ("Anything unusual?", "Why is the weather in Chennai unusual?"),
-    ("What's a heat wave?", "What counts as a heat wave in India?"),
-    ("Why so humid?",
-     "Why does humid heat feel worse than dry heat at the same temperature?"),
+    "What's the weather in Mumbai right now?",
+    "Will it rain in Pune this week?",
+    "How has Delhi's temperature changed vs previous years?",
+    "Why is the weather in Chennai unusual?",
+    "What counts as a heat wave in India?",
+    "Why does humid heat feel worse than dry heat?",
 ]
 
-CONFIDENCE_PILL = {
+CONFIDENCE = {
     "high": ("pill-green", "Well supported by the data"),
     "medium": ("pill-amber", "Supported, with gaps in the data"),
-    "low": ("pill-red", "Weakly supported - indicative only"),
+    "low": ("pill-red", "Weakly supported — indicative only"),
 }
 
 # Folium marker colour names -> hex, for the HTML legend.
@@ -105,7 +115,7 @@ def cached_geocode(place: str):
 
 @st.cache_data(ttl=900, show_spinner=False)
 def cached_conditions(lat: float, lon: float, name: str):
-    """Everything the dashboard needs, in one cached call."""
+    """Everything the Now page needs, in one cached call."""
     from src.core.models import Location
 
     loc = Location(name=name, latitude=lat, longitude=lon)
@@ -144,6 +154,81 @@ def active_location():
     if "location" not in st.session_state:
         st.session_state["location"] = cached_geocode("Mumbai")
     return st.session_state["location"]
+
+
+def remember(place) -> None:
+    """Keep the last few places, most recent first, for one-tap return."""
+    recents = [p for p in st.session_state.get("recents", [])
+               if p.label != place.label]
+    st.session_state["recents"] = ([place] + recents)[:4]
+
+
+# ------------------------------------------------------------ small pieces
+def section(title: str, note: str = "") -> None:
+    """A labelled rule. This is what replaced the second row of tabs."""
+    st.markdown(
+        f"<div class='section'><h2>{title}</h2>"
+        f"<span class='rule'></span>"
+        + (f"<span class='note'>{note}</span>" if note else "")
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_place_bar() -> None:
+    """The location control, on every page and at every width.
+
+    A form, so Enter submits. The old control was a text field plus a
+    separate **Set** button where Enter did nothing at all.
+    """
+    place = active_location()
+
+    st.markdown(
+        f"<div class='placebar'><span class='pin'>◉</span>"
+        f"<span class='where'>{dash.pretty_label(place)}</span>"
+        f"<span class='coord'>{place.latitude:.3f}, "
+        f"{place.longitude:.3f}</span></div>",
+        unsafe_allow_html=True,
+    )
+
+    with st.form("place_form", clear_on_submit=True, border=False):
+        field, go_btn, here_btn = st.columns([6, 1.1, 1.3])
+        typed = field.text_input(
+            "Change location", value="",
+            placeholder="Search any place — Mumbai, Nagaur, Tokyo…",
+            label_visibility="collapsed",
+        )
+        submitted = go_btn.form_submit_button("Go", width="stretch")
+        near = here_btn.form_submit_button("Near me", width="stretch")
+
+    if submitted and typed.strip():
+        try:
+            found = cached_geocode(typed)
+            st.session_state["location"] = found
+            remember(found)
+            st.rerun()
+        except LocationNotFound:
+            st.warning(
+                f"Could not find “{typed}”. Try adding the country — "
+                f"“{typed}, India”."
+            )
+    elif near:
+        try:
+            found = detect_location_from_ip()
+            st.session_state["location"] = found
+            remember(found)
+            st.rerun()
+        except WeatherIQError as exc:
+            st.warning(f"{exc} Search for a place instead.")
+
+    recents = st.session_state.get("recents", [])
+    if len(recents) > 1:
+        chips = st.columns(len(recents))
+        for column, past in zip(chips, recents):
+            if column.button(past.name, key=f"recent_{past.label}",
+                             width="stretch"):
+                st.session_state["location"] = past
+                st.rerun()
 
 
 # ------------------------------------------------------------------ charts
@@ -221,9 +306,91 @@ def plot_year_comparison(yoy: dict, key_prefix: str) -> None:
                         key=f"{key_prefix}_yoy_{variable}")
 
 
+# ---------------------------------------------------------------- evidence
+def render_plan(plan) -> None:
+    """The planner's decision as a sentence, not a dict dump."""
+    if plan is None:
+        return
+    window = (f"{plan.start_date} to {plan.end_date}"
+              if plan.start_date and plan.end_date else "a default window")
+    st.markdown(
+        f"<div class='src-body'>Read as a "
+        f"<b style='color:{theme.TEXT}'>{plan.intent}</b> question about "
+        f"<b style='color:{theme.TEXT}'>{plan.location or 'the selected place'}</b>, "
+        f"over {window}, needing "
+        f"{', '.join(plan.variables) if plan.variables else 'no specific variables'}."
+        f"<br><i>{plan.rationale}</i></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_timeline(trace) -> None:
+    """The pipeline as a readable sequence.
+
+    This used to be `st.dataframe(trace)`. A table is the least persuasive
+    way to show an examiner that seven agents ran and where the time went.
+    """
+    rows = []
+    for step in trace:
+        colour = theme.ACCENT if step.ok else theme.HOT
+        note = step.note or step.error or ("ok" if step.ok else "failed")
+        rows.append(
+            f"<div class='stage'>"
+            f"<span class='stage-dot' style='background:{colour}'></span>"
+            f"<span class='stage-name'>{step.agent}</span>"
+            f"<span class='stage-note'>{note}</span>"
+            f"<span class='stage-ms'>{step.duration_ms:.0f} ms</span></div>"
+        )
+    total = sum(s.duration_ms for s in trace)
+    st.markdown(
+        "<div class='card'>" + "".join(rows)
+        + f"<div class='stage' style='border-top:1px solid var(--line)'>"
+        f"<span class='stage-dot'></span>"
+        f"<span class='stage-name'>total</span>"
+        f"<span class='stage-note'></span>"
+        f"<span class='stage-ms'>{total:.0f} ms</span></div></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_sources(documents) -> None:
+    """Retrieved passages, ranked.
+
+    The score is a reciprocal-rank-fusion value (`1 / (k + rank)`, summed
+    over the lists that returned the chunk), not a similarity. It has no
+    meaningful absolute scale - real values land around 0.02 - so drawing it
+    as a percentage bar would say "weak match" about every result the
+    retriever was confident in. Rank is what RRF actually encodes, so rank
+    is what this shows; the bar is scaled against the best hit in the set.
+    """
+    if not documents:
+        st.caption("No background knowledge was needed for this question.")
+        return
+
+    best = max((float(d.score) for d in documents), default=0.0) or 1.0
+    for rank, doc in enumerate(documents, start=1):
+        share = max(6.0, min(100.0, float(doc.score) / best * 100))
+        place = "closest match" if rank == 1 else f"#{rank} of {len(documents)}"
+        st.markdown(
+            f"<div class='src-card'><b>{doc.title}</b>"
+            f"<div class='src-strength'>"
+            f"<i style='width:{share:.0f}%'></i></div>"
+            f"<div class='src-body' style='color:var(--faint)'>"
+            f"{place} · <code>{doc.source}</code> · "
+            f"fusion score {doc.score:.3f}</div>"
+            f"<div class='src-body'>{doc.text[:300]}…</div></div>",
+            unsafe_allow_html=True,
+        )
+
+
 def render_evidence(result, key_prefix: str) -> None:
-    """Charts, sources and the agent trace - the 'show your working' panel."""
+    """The 'show your working' panel - the examiner's surface."""
     bundle = result.bundle
+
+    section("How this answer was reached")
+    render_plan(result.plan)
+    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    render_timeline(result.trace)
 
     if bundle is not None:
         if bundle.history is not None and not bundle.history.empty:
@@ -239,111 +406,20 @@ def render_evidence(result, key_prefix: str) -> None:
             key_prefix,
         )
 
-    left, right = st.columns(2)
+    section(f"Knowledge used ({len(result.documents)})")
+    render_sources(result.documents)
 
-    with left:
-        st.markdown(f"**Retrieved knowledge** ({len(result.documents)} chunks)")
-        if result.documents:
-            for doc in result.documents:
-                st.markdown(
-                    f"<div class='src-card'><b>{doc.title}</b><br>"
-                    f"<small><code>{doc.source}</code> &middot; "
-                    f"similarity {doc.score:.3f}</small><br>"
-                    f"<small>{doc.text[:220]}...</small></div>",
-                    unsafe_allow_html=True,
-                )
-        else:
-            st.caption("Nothing was retrieved for this question.")
-
-    with right:
-        st.markdown("**Agent trace**")
+    anomalies = result.anomalies
+    if anomalies.get("anomalies"):
+        section(f"Anomalies ({anomalies.get('total', 0)})",
+                f"against {anomalies.get('baseline_used', '')}")
         st.dataframe(
-            pd.DataFrame([s.to_dict() for s in result.trace]),
-            width="stretch", hide_index=True, key=f"{key_prefix}_trace",
+            pd.DataFrame(anomalies["anomalies"]).head(10),
+            width="stretch", hide_index=True, key=f"{key_prefix}_anom",
         )
-        anomalies = result.anomalies
-        if anomalies.get("anomalies"):
-            st.markdown(f"**Anomalies** ({anomalies.get('total', 0)})")
-            st.caption(f"Compared against: {anomalies.get('baseline_used', '')}")
-            st.dataframe(
-                pd.DataFrame(anomalies["anomalies"]).head(10),
-                width="stretch", hide_index=True, key=f"{key_prefix}_anom",
-            )
 
 
-# ----------------------------------------------------------------- sidebar
-with st.sidebar:
-    st.markdown("<span class='eyebrow'>Station</span>", unsafe_allow_html=True)
-
-    typed = st.text_input(
-        "Search a place", value="",
-        placeholder="Mumbai, Nagaur, Tokyo…",
-        label_visibility="collapsed",
-    )
-    col_a, col_b = st.columns(2)
-    if col_a.button("Set", width="stretch") and typed.strip():
-        try:
-            st.session_state["location"] = cached_geocode(typed)
-        except LocationNotFound as exc:
-            st.error(str(exc))
-    if col_b.button("Near me", width="stretch"):
-        try:
-            st.session_state["location"] = detect_location_from_ip()
-        except WeatherIQError as exc:
-            st.warning(f"{exc} Search for a place instead.")
-
-    place = active_location()
-    st.markdown(
-        f"<div class='card' style='margin-top:10px'>"
-        f"<div class='hero-place'>{place.name}</div>"
-        f"<div class='hero-coord'>{place.admin1 or place.country}</div>"
-        f"<div class='hero-coord' style='margin-top:6px'>"
-        f"{place.latitude:.3f}, {place.longitude:.3f}</div></div>",
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("<span class='eyebrow'>System</span>", unsafe_allow_html=True)
-
-    # Status reads as four equal rows, not a warning banner. Whether a
-    # language model is attached is a configuration fact, not an error - the
-    # analysis, anomaly detection and retrieval all run either way.
-    llm_on = settings.llm_enabled
-    dot = theme.ACCENT if llm_on else theme.MUTED
-    st.markdown(
-        f"<div style='margin-top:8px'>"
-        f"<div class='metric-row'><span>model</span>"
-        f"<b style='color:{dot}'>"
-        f"{settings.llm_label if llm_on else 'not connected'}</b></div>"
-        f"<div class='metric-row'><span>retrieval</span>"
-        f"<b>{settings.embedding_backend}</b></div>"
-        f"<div class='metric-row'><span>indexed</span>"
-        f"<b>{len(get_retriever())} chunks</b></div>"
-        f"<div class='metric-row'><span>source</span>"
-        f"<b>Open-Meteo</b></div></div>",
-        unsafe_allow_html=True,
-    )
-
-    if not llm_on:
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-        with st.expander("Turn on conversational answers"):
-            st.markdown(
-                "Answers currently come from a deterministic template. To get "
-                "natural language and follow-up questions, add a **free** key:\n\n"
-                "1. Open **console.groq.com/keys** and sign in\n"
-                "2. Create a key and copy it\n"
-                "3. Put it in `.env`:\n"
-            )
-            st.code("GROQ_API_KEY=gsk_your_key_here", language="bash")
-            st.caption("No card required. Restart the app after saving.")
-
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
-    if st.button("Clear chat", width="stretch"):
-        st.session_state["messages"] = []
-        st.session_state["results"] = {}
-        st.rerun()
-
-
-# -------------------------------------------------------------------- main
+# -------------------------------------------------------------------- page
 st.markdown(
     """
 <div class="masthead">
@@ -355,113 +431,90 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_chat, tab_map, tab_dash, tab_about = st.tabs(
-    ["Ask", "Map", "Dashboard", "How it works"]
+render_place_bar()
+
+tab_now, tab_map, tab_ask, tab_about = st.tabs(
+    ["Now", "Map", "Ask", "How it works"]
 )
 
 
-# ------------------------------------------------------------------- chat
-with tab_chat:
-    if "messages" not in st.session_state:
-        st.session_state["messages"] = []
-    if "results" not in st.session_state:
-        st.session_state["results"] = {}
+# --------------------------------------------------------------------- now
+with tab_now:
+    place = active_location()
 
-    if not st.session_state["messages"]:
-        st.markdown(
-            "<span class='eyebrow'>Start with</span>", unsafe_allow_html=True
+    try:
+        current, rich, hourly, plain = cached_conditions(
+            place.latitude, place.longitude, place.name
         )
-        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-        # The container key scopes the prompt-chip styling in theme.py, so
-        # these read as suggestions rather than a row of submit buttons.
-        with st.container(key="samples"):
-            for row_start in range(0, len(SAMPLES), 3):
-                for column, (label, sample) in zip(
-                    st.columns(3), SAMPLES[row_start:row_start + 3]
-                ):
-                    if column.button(label, width="stretch", key=f"s_{label}",
-                                     help=sample):
-                        st.session_state["pending_text"] = sample
-                        st.rerun()
+    except WeatherIQError as exc:
+        st.error(f"Could not fetch conditions: {exc}")
+        current, rich, hourly, plain = {}, None, None, None
 
-    # The transcript scrolls inside a fixed-height box so the input stays put.
-    # Rendered inline, st.chat_input sits *after* the messages and is pushed
-    # further down with every exchange - and because the page inside a tab
-    # does not grow a scrollbar, it became unreachable after the first
-    # answer. That read as "you cannot ask a second question".
-    transcript = (
-        st.container(height=460) if st.session_state["messages"]
-        else st.container()
-    )
+    if current:
+        departure = cached_departure(
+            place.latitude, place.longitude, place.name
+        )
+        # The verdict is inside the hero and renders straight from the
+        # six-hour cache, with no button press. It used to sit behind
+        # "Analyse this location" inside a sub-tab of a tab - three
+        # interactions away from the thing the project exists to say.
+        dash.render_hero(place, current, rich, departure)
 
-    for index, message in enumerate(st.session_state["messages"]):
-        with transcript.chat_message(message["role"]):
-            st.markdown(message["content"])
-            result = st.session_state["results"].get(index)
-            if result is not None:
-                insight = result.insight
-                if insight:
-                    style, note = CONFIDENCE_PILL.get(
-                        insight.confidence, ("pill-amber", "")
-                    )
-                    # Name the place actually used, not the one requested -
-                    # they differ when a guessed name could not be geocoded,
-                    # and quietly answering about somewhere else is worse
-                    # than saying so.
-                    where = (result.bundle.location.label
-                             if result.bundle else
-                             (result.plan.location if result.plan else ""))
-                    bits = [
-                        f"<span class='pill {style}'>"
-                        f"{insight.confidence.title()} confidence</span>"
-                    ]
-                    if where:
-                        bits.append(f"<span class='meta'>📍 {where}</span>")
-                    if result.plan:
-                        bits.append(
-                            f"<span class='meta'>🎯 {result.plan.intent}</span>"
-                        )
-                    bits.append(f"<span class='meta'>{note}</span>")
-                    st.markdown(" ".join(bits), unsafe_allow_html=True)
+        section("Today")
+        main, rail = st.columns([2, 1])
+        with main:
+            dash.render_today_summary(rich)
+            if hourly is not None and not hourly.empty:
+                dash.hourly_chart(hourly.head(24), key="now_today_hourly")
+        with rail:
+            dash.render_current_details(current, rich)
+            dash.render_outlook(rich)
 
-                    if not settings.llm_enabled:
-                        st.caption(
-                            "Template mode - add a free GROQ_API_KEY to .env "
-                            "for conversational answers."
-                        )
-                with st.expander("🔍 Show the working - data, sources, agents"):
-                    render_evidence(result, key_prefix=f"m{index}")
+        section("Next 10 days")
+        dash.day_cards(rich)
+        st.markdown("")
+        dash.range_chart(rich, key="now_range")
 
-    # A sample-button click parks its text in session state and reruns; the
-    # chat box itself takes priority when the user has typed something.
-    question = st.chat_input("Ask about the weather anywhere...")
-    if not question:
-        question = st.session_state.pop("pending_text", None)
-
-    if question:
-        st.session_state["messages"].append({"role": "user", "content": question})
-        with transcript.chat_message("user"):
-            st.markdown(question)
-
-        with transcript.chat_message("assistant"):
-            with st.spinner("Planning, fetching, analysing..."):
-                history = [
-                    {"role": m["role"], "content": m["content"]}
-                    for m in st.session_state["messages"][:-1]
-                ]
-                # The sidebar selection is the fallback when the question
-                # names no place, or names one the geocoder cannot find.
-                reply, result = orchestrator().chat(
-                    question, history,
-                    default_location=active_location().name,
+        section("Next 48 hours")
+        dash.hourly_chart(hourly, key="now_hourly_full")
+        with st.expander("Hour by hour, as a table"):
+            if hourly is not None and not hourly.empty:
+                table = hourly.reset_index().rename(columns={
+                    "time": "Time", "temperature_2m": "Temp °C",
+                    "apparent_temperature": "Feels °C",
+                    "relative_humidity_2m": "Humidity %",
+                    "precipitation": "Rain mm",
+                    "precipitation_probability": "Rain chance %",
+                    "wind_speed_10m": "Wind km/h", "condition": "Condition",
+                })
+                st.dataframe(
+                    table.drop(columns=["weather_code"], errors="ignore"),
+                    width="stretch", hide_index=True, height=300,
+                    key="now_hourly_table",
                 )
-            st.markdown(reply)
 
-        st.session_state["messages"].append(
-            {"role": "assistant", "content": reply}
+        section("The full analysis", "runs all seven agents on this place")
+        st.caption(
+            "The headline above comes from the cached ten-year baseline. "
+            "This runs the complete pipeline — fetching history, detecting "
+            "anomalies and retrieving the relevant meteorology."
         )
-        st.session_state["results"][len(st.session_state["messages"]) - 1] = result
-        st.rerun()
+        if st.button("Run the full analysis", type="primary",
+                     key="now_analyse"):
+            with st.status("Running the pipeline…", expanded=False) as status:
+                st.session_state["now_result"] = orchestrator().answer(
+                    f"Is the weather in {place.name} unusual right now?",
+                    default_location=place.name,
+                )
+                status.update(label="Analysis complete", state="complete")
+
+        result = st.session_state.get("now_result")
+        if result is not None:
+            insight = result.insight
+            st.markdown(f"**{insight.answer}**")
+            for item in insight.key_findings:
+                st.markdown(f"- {item}")
+            render_evidence(result, key_prefix="nowtrend")
 
 
 # -------------------------------------------------------------------- map
@@ -471,12 +524,12 @@ with tab_map:
     top.markdown(
         f"<span class='eyebrow'>Conditions around</span>"
         f"<div class='hero-place' style='font-size:1.25rem;margin-top:3px'>"
-        f"{place.label}</div>",
+        f"{dash.pretty_label(place)}</div>",
         unsafe_allow_html=True,
     )
     count = controls.slider("Nearby stations", 4, 12, 8, key="map_count")
 
-    with st.spinner("Fetching conditions nearby..."):
+    with st.spinner("Fetching conditions nearby…"):
         points = cached_map_points(
             place.latitude, place.longitude, place.name, count
         )
@@ -510,14 +563,14 @@ with tab_map:
                 f"<span class='legend-dot' style='background:"
                 f"{SWATCH.get(colour, theme.MUTED)}'></span>"
                 f"<b>{loc.name}</b>"
-                f"<div style='font-size:.74rem;color:{theme.MUTED};"
+                f"<div style='font-size:.78rem;color:{theme.MUTED};"
                 f"margin-left:17px'>{current.get('condition', '')}"
                 + (f" · {rain} mm" if rain else "")
                 + "</div></div>",
                 unsafe_allow_html=True,
             )
 
-    with st.expander("Legend"):
+    with st.expander("What the colours mean"):
         for colour, label, span in legend_items():
             st.markdown(
                 f"<span class='legend-dot' style='background:"
@@ -531,85 +584,140 @@ with tab_map:
         )
 
 
-# -------------------------------------------------------------- dashboard
-with tab_dash:
-    place = active_location()
+# -------------------------------------------------------------------- ask
+with tab_ask:
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = []
+    if "results" not in st.session_state:
+        st.session_state["results"] = {}
 
-    try:
-        current, rich, hourly, plain = cached_conditions(
-            place.latitude, place.longitude, place.name
+    messages = st.session_state["messages"]
+
+    if not messages:
+        st.markdown(
+            "<div class='verdict'>Ask about the weather anywhere.</div>"
+            "<div class='verdict-sub'>Answers are built from live readings "
+            "and a ten-year archive, and every one of them shows its "
+            "working.</div>",
+            unsafe_allow_html=True,
         )
-    except WeatherIQError as exc:
-        st.error(f"Could not fetch conditions: {exc}")
-        current, rich, hourly, plain = {}, None, None, None
-
-    if current:
-        with st.spinner("Loading baseline..."):
-            departure = cached_departure(
-                place.latitude, place.longitude, place.name
-            )
-        dash.render_hero(place, current, rich, departure)
-
-    view_today, view_hourly, view_days, view_trend = st.tabs(
-        ["Today", "Next 48 hours", "10 days", "Is this normal?"]
-    )
-
-    with view_today:
-        main, rail = st.columns([2, 1])
-        with main:
-            dash.render_today_summary(rich)
-            if hourly is not None and not hourly.empty:
-                st.markdown("**Through the day**")
-                dash.hourly_chart(hourly.head(24), key="dash_today_hourly")
-        with rail:
-            dash.render_current_details(current, rich)
-            dash.render_outlook(rich)
-
-    with view_hourly:
-        dash.hourly_chart(hourly, key="dash_hourly_full")
-        if hourly is not None and not hourly.empty:
-            table = hourly.reset_index().rename(columns={
-                "time": "Time", "temperature_2m": "Temp °C",
-                "apparent_temperature": "Feels °C",
-                "relative_humidity_2m": "Humidity %",
-                "precipitation": "Rain mm",
-                "precipitation_probability": "Rain chance %",
-                "wind_speed_10m": "Wind km/h", "condition": "Condition",
-            })
-            st.dataframe(
-                table.drop(columns=["weather_code"], errors="ignore"),
-                width="stretch", hide_index=True, height=300,
-                key="dash_hourly_table",
-            )
-
-    with view_days:
-        dash.day_cards(rich)
-        st.markdown("")
-        dash.range_chart(rich, key="dash_range")
-
-    with view_trend:
-        # The point of difference: not what the weather is, but whether it is
-        # unusual. Same agent pipeline the chat tab uses.
-        st.caption(
-            "Runs the full agent pipeline on this location - fetches a "
-            "10-year baseline, then reports how the current period compares."
+        section("Try one of these")
+        # Pills, not panels - see the note in theme.py. The container key
+        # scopes that styling.
+        with st.container(key="samples"):
+            for row_start in range(0, len(SAMPLES), 2):
+                for column, sample in zip(
+                    st.columns(2), SAMPLES[row_start:row_start + 2]
+                ):
+                    if column.button(sample, width="stretch",
+                                     key=f"s_{sample[:24]}"):
+                        st.session_state["pending_text"] = sample
+                        st.rerun()
+    else:
+        asked = len([m for m in messages if m["role"] == "user"])
+        head, clear = st.columns([5, 1])
+        head.markdown(
+            f"<span class='eyebrow'>Conversation · {asked} "
+            f"question{'' if asked == 1 else 's'}</span>",
+            unsafe_allow_html=True,
         )
-        if st.button("Analyse this location", type="primary",
-                     key="dash_analyse"):
-            with st.spinner("Fetching baseline and analysing..."):
-                st.session_state["dash_result"] = orchestrator().answer(
-                    f"Is the weather in {place.name} unusual right now?",
-                    default_location=place.name,
-                )
+        if clear.button("Clear", key="clear_chat", width="stretch"):
+            st.session_state["messages"] = []
+            st.session_state["results"] = {}
+            st.rerun()
 
-        result = st.session_state.get("dash_result")
-        if result is not None:
-            insight = result.insight
-            st.markdown(f"**{insight.answer}**")
-            for item in insight.key_findings:
-                st.markdown(f"- {item}")
-            st.markdown("")
-            render_evidence(result, key_prefix="dashtrend")
+    # The transcript renders inline and the composer is sticky, so the input
+    # stays reachable however long the thread gets. The previous version
+    # pinned the transcript inside a fixed-height 460px scroller to keep the
+    # input on screen, which meant your own question scrolled out of sight
+    # the moment an answer arrived.
+    for index, message in enumerate(messages):
+        if message["role"] == "user":
+            st.markdown(
+                f"<div class='turn-you'><div>"
+                f"<span class='turn-label'>You asked</span>"
+                f"<div class='bubble'>{message['content']}</div>"
+                f"</div></div>",
+                unsafe_allow_html=True,
+            )
+            continue
+
+        result = st.session_state["results"].get(index)
+        meta = ""
+        if result is not None and result.insight:
+            style, note = CONFIDENCE.get(
+                result.insight.confidence, ("pill-amber", "")
+            )
+            # Name the place actually used, not the one requested - they
+            # differ when a guessed name could not be geocoded, and quietly
+            # answering about somewhere else is worse than saying so.
+            where = (dash.pretty_label(result.bundle.location) if result.bundle
+                     else (result.plan.location if result.plan else ""))
+            bits = [f"<span class='pill {style}'>{note}</span>"]
+            if where:
+                bits.append(f"<span class='meta'>◉ {where}</span>")
+            meta = f"<div class='answer-meta'>{''.join(bits)}</div>"
+
+        # The answer body has to be a separate st.markdown call so its
+        # markdown actually renders, so the turn is a keyed container and
+        # theme.py styles it by key. Writing the wrapper as raw HTML would
+        # close the div before the body was inside it.
+        with st.container(key=f"answer_{index}"):
+            st.markdown(
+                f"<span class='turn-label'>Answer</span>{meta}",
+                unsafe_allow_html=True,
+            )
+            st.markdown(message["content"])
+
+            if result is not None:
+                if not settings.llm_enabled:
+                    st.caption(
+                        "Template mode — add a free GROQ_API_KEY to .env "
+                        "for conversational answers."
+                    )
+                with st.expander("Show the working — data, sources, agents"):
+                    render_evidence(result, key_prefix=f"m{index}")
+
+        st.markdown("<hr class='turn-rule'>", unsafe_allow_html=True)
+
+    # A sample click parks its text in session state and reruns; the chat box
+    # itself takes priority when the user has typed something.
+    with st.container(key="composer"):
+        st.markdown(
+            "<div class='composer-hint'>Ask a question</div>",
+            unsafe_allow_html=True,
+        )
+        question = st.chat_input(
+            "Ask a follow-up, or about anywhere else…"
+            if messages else "Ask about the weather anywhere…"
+        )
+    if not question:
+        question = st.session_state.pop("pending_text", None)
+
+    if question:
+        st.session_state["messages"].append(
+            {"role": "user", "content": question}
+        )
+        with st.status("Working on it…", expanded=True) as status:
+            st.write("Planning the query…")
+            history = [
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state["messages"][:-1]
+            ]
+            st.write("Fetching readings and analysing…")
+            # The header selection is the fallback when the question names no
+            # place, or names one the geocoder cannot find.
+            reply, result = orchestrator().chat(
+                question, history,
+                default_location=active_location().name,
+            )
+            status.update(label="Answered", state="complete", expanded=False)
+
+        st.session_state["messages"].append(
+            {"role": "assistant", "content": reply}
+        )
+        st.session_state["results"][len(st.session_state["messages"]) - 1] = result
+        st.rerun()
 
 
 # ------------------------------------------------------------------ about
@@ -628,11 +736,7 @@ with tab_about:
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div style='height:26px'></div>", unsafe_allow_html=True)
-
-    # ---- the pipeline, as a row of stages ----
-    st.markdown("<span class='eyebrow'>Pipeline</span>", unsafe_allow_html=True)
-    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+    section("Pipeline")
 
     STAGES = [
         ("Planner", "question → structured plan",
@@ -657,25 +761,19 @@ with tab_about:
             st.columns(3), STAGES[start:start + 3]
         ):
             column.markdown(
-                f"<div class='card' style='height:150px'>"
+                f"<div class='card' style='height:158px'>"
                 f"<div class='card-head'>{name}</div>"
-                f"<div style='font-size:.82rem;color:{theme.ACCENT};"
+                f"<div style='font-size:.84rem;color:{theme.ACCENT};"
                 f"margin-bottom:7px'>{role}</div>"
-                f"<div style='font-size:.82rem;color:{theme.MUTED};"
+                f"<div style='font-size:.84rem;color:{theme.MUTED};"
                 f"line-height:1.55'>{detail}</div></div>",
                 unsafe_allow_html=True,
             )
 
-    st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
-
     left, right = st.columns(2)
 
     with left:
-        st.markdown(
-            "<span class='eyebrow'>Measured, not claimed</span>",
-            unsafe_allow_html=True,
-        )
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+        section("Measured, not claimed")
         # Numbers from eval/results/report.md. The held-out split is quoted
         # because the fitted one flatters the rule-based planner.
         st.markdown(
@@ -704,11 +802,7 @@ with tab_about:
         )
 
     with right:
-        st.markdown(
-            "<span class='eyebrow'>Nothing here is paid</span>",
-            unsafe_allow_html=True,
-        )
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+        section("Nothing here is paid")
         st.markdown(
             "<div class='card'>"
             "<div class='metric-row'><span>weather + archive</span>"
@@ -729,7 +823,37 @@ with tab_about:
             "and its free tier is rate-limited rather than billed."
         )
 
-    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+    # System status lives here rather than in permanent chrome. Whether a
+    # language model is attached is a configuration fact, not something a
+    # person checking the weather needs on screen at all times.
+    section("System status")
+    llm_on = settings.llm_enabled
+    st.markdown(
+        f"<div class='card'>"
+        f"<div class='metric-row'><span>language model</span>"
+        f"<b style='color:{theme.ACCENT if llm_on else theme.MUTED}'>"
+        f"{settings.llm_label if llm_on else 'not connected'}</b></div>"
+        f"<div class='metric-row'><span>retrieval backend</span>"
+        f"<b>{settings.embedding_backend}</b></div>"
+        f"<div class='metric-row'><span>indexed knowledge</span>"
+        f"<b>{len(get_retriever())} chunks</b></div>"
+        f"<div class='metric-row'><span>weather source</span>"
+        f"<b>Open-Meteo</b></div></div>",
+        unsafe_allow_html=True,
+    )
+
+    if not llm_on:
+        with st.expander("Turn on conversational answers"):
+            st.markdown(
+                "Answers currently come from a deterministic template. To get "
+                "natural language and follow-up questions, add a **free** "
+                "key:\n\n"
+                "1. Open **console.groq.com/keys** and sign in\n"
+                "2. Create a key and copy it\n"
+                "3. Put it in `.env`:\n"
+            )
+            st.code("GROQ_API_KEY=gsk_your_key_here", language="bash")
+            st.caption("No card required. Restart the app after saving.")
 
     with st.expander("Nothing in this project is trained"):
         st.markdown(

@@ -97,6 +97,22 @@ def compute_departure(loc, years: int = 10) -> dict:
         return {}
 
 
+def pretty_label(place) -> str:
+    """`Location.label` without the repeats.
+
+    A country-level match geocodes to name == admin1 == country, so the raw
+    label renders as "India, India". Fixed here rather than on the model,
+    because that label is also fed to the language model as prompt context
+    and changing it would change what the model is asked.
+    """
+    seen, parts = set(), []
+    for bit in (place.name, place.admin1, place.country):
+        if bit and bit not in seen:
+            seen.add(bit)
+            parts.append(bit)
+    return ", ".join(parts)
+
+
 def _fmt(value, unit: str = "", digits: int = 0) -> str:
     if value is None or (isinstance(value, float) and pd.isna(value)):
         return "–"
@@ -109,6 +125,46 @@ def _fmt(value, unit: str = "", digits: int = 0) -> str:
 # Hero
 # --------------------------------------------------------------------------
 
+def verdict_sentence(departure: dict) -> tuple[str, str]:
+    """Today against its normal, said in words before it is said in numbers.
+
+    The hero used to lead with `DEPARTURE FROM NORMAL` and
+    `dashed band = ±1σ (1.1°)` - the single best idea in this project,
+    written so that only a meteorologist could read it. The statistics have
+    not gone anywhere; they are now the footnote rather than the headline.
+    """
+    if not departure:
+        return "", ""
+
+    delta = departure["departure"]
+    sigma = departure.get("sigma") or 0
+    years = departure.get("years", 10)
+    size = abs(delta)
+
+    if size < 0.75:
+        headline = "About normal for the date."
+    else:
+        direction = "warmer" if delta > 0 else "cooler"
+        # Two sigma is the conventional line between ordinary variation and
+        # something worth remarking on, and it is the same threshold the
+        # anomaly agent uses, so the two can never contradict each other.
+        if sigma and size >= 2 * sigma:
+            strength = "Much"
+        elif size >= 2:
+            strength = "Noticeably"
+        else:
+            strength = "Slightly"
+        headline = f"{strength} {direction} than usual for the date."
+
+    detail = (
+        f"Today's {departure['observed']:.0f}° is {size:.1f}° "
+        f"{'above' if delta >= 0 else 'below'} the "
+        f"{departure['normal']:.1f}° average for this date across the last "
+        f"{years} years."
+    )
+    return headline, detail
+
+
 def _departure_markup(departure: dict) -> str:
     """The signature element: today's reading against its normal.
 
@@ -116,6 +172,10 @@ def _departure_markup(departure: dict) -> str:
     ordinary in Mumbai and alarming in Shimla. This track puts the ten-year
     normal for this calendar date at the centre, shades one standard
     deviation either side, and marks where today actually sits.
+
+    Reading order is deliberate: the plain sentence, then the picture, then
+    the method. A reader who stops after the first line has still got the
+    answer.
     """
     if not departure:
         return ""
@@ -130,32 +190,26 @@ def _departure_markup(departure: dict) -> str:
     band_left = to_pct(-sigma)
     band_width = to_pct(sigma) - band_left
     colour = departure_colour(delta)
-
-    if abs(delta) < 0.75:
-        verdict = "about normal for the date"
-    else:
-        direction = "above" if delta > 0 else "below"
-        strength = "far " if abs(delta) >= 2 * max(sigma, 0.5) else ""
-        verdict = f"{strength}{direction} normal for the date"
+    headline, detail = verdict_sentence(departure)
 
     return f"""
 <div class="dep">
-  <div class="dep-head">
-    <span class="eyebrow">Departure from normal</span>
-    <span class="dep-note">{departure['years']}-yr baseline · ±7-day window</span>
-  </div>
-  <div class="dep-track">
+  <div class="verdict" style="color:{colour}">{headline}</div>
+  <div class="verdict-sub">{detail}</div>
+  <div class="dep-track" style="margin-top:14px">
     <div class="dep-band" style="left:{band_left:.1f}%;width:{band_width:.1f}%"></div>
     <div class="dep-zero"></div>
     <div class="dep-mark" style="left:{mark:.1f}%;background:{colour}"></div>
   </div>
   <div class="dep-scale">
-    <span>−{DEPARTURE_SPAN:.0f}°</span><span>normal
-      {departure['normal']:.1f}°</span><span>+{DEPARTURE_SPAN:.0f}°</span>
+    <span>−{DEPARTURE_SPAN:.0f}° cooler</span>
+    <span>normal {departure['normal']:.1f}°</span>
+    <span>+{DEPARTURE_SPAN:.0f}° warmer</span>
   </div>
-  <div class="dep-value">
-    <b style="color:{colour}">{delta:+.1f}°</b> {verdict}
-    <span class="dep-note">&nbsp;· dashed band = ±1σ ({sigma:.1f}°)</span>
+  <div class="dep-note" style="margin-top:9px">
+    Marker is today at <b style="color:{colour}">{delta:+.1f}°</b>. Baseline:
+    {departure['years']} years of the same calendar window, ±7 days; the
+    dashed band is one standard deviation (±{sigma:.1f}°).
   </div>
 </div>"""
 
@@ -188,7 +242,7 @@ def render_hero(place, current: dict, daily: pd.DataFrame,
       </div>
     </div>
     <div class="hero-meta">
-      <div class="hero-place">{place.label}</div>
+      <div class="hero-place">{pretty_label(place)}</div>
       <div class="hero-coord">{place.latitude:.3f}, {place.longitude:.3f}</div>
       <div class="hero-hilo">today
         <b class="num">{_fmt(hi, "°")}</b> / <b class="num">{_fmt(lo, "°")}</b>
